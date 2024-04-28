@@ -1,0 +1,101 @@
+SET @OLD_UNIQUE_CHECKS = @@UNIQUE_CHECKS, UNIQUE_CHECKS = 0;
+SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS = 0;
+SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+CREATE DATABASE IF NOT EXISTS xlrm;
+USE xlrm;
+
+CREATE TABLE IF NOT EXISTS customer
+       (id BIGINT NOT NULL AUTO_INCREMENT,
+        firstName VARCHAR(45) NOT NULL,
+	fullName VARCHAR(45) NOT NULL,
+	document VARCHAR(45) NOT NULL,
+	email VARCHAR(45) NOT NULL,
+	phoneNumber VARCHAR(45),
+	type TINYINT UNSIGNED NOT NULL,
+	streetAddress VARCHAR(45),
+	city VARCHAR(45),
+	state VARCHAR(45),
+	zipCode VARCHAR(45),
+	country VARCHAR(45),
+	hidden TINYINT UNSIGNED NOT NULL,
+	created DATETIME NOT NULL,
+	updated DATETIME NOT NULL,
+	PRIMARY KEY (id));
+
+CREATE TABLE IF NOT EXISTS paymentMethod
+       (id BIGINT NOT NULL AUTO_INCREMENT,
+        name VARCHAR(45) NOT NULL,
+	description VARCHAR(45) NOT NULL,
+	PRIMARY KEY (id));
+
+CREATE TABLE IF NOT EXISTS product
+       (id BIGINT NOT NULL AUTO_INCREMENT,
+        code INT NOT NULL,
+	name VARCHAR(45) NOT NULL,
+	manufacturer VARCHAR(45) NOT NULL,
+	description VARCHAR(45) NOT NULL,
+	quantity INT NOT NULL,
+	price DECIMAL(7,2) NOT NULL,
+	hidden TINYINT UNSIGNED NOT NULL,
+	created DATETIME NOT NULL,
+	updated DATETIME NOT NULL,
+	PRIMARY KEY (id));
+
+CREATE TABLE IF NOT EXISTS sale
+       (id BIGINT NOT NULL AUTO_INCREMENT,
+        userId BIGINT NOT NULL,
+        customerId BIGINT NOT NULL,
+	/* totalPrice DECIMAL(M,D) NOT NULL, */
+	totalPrice DECIMAL NOT NULL,
+	`change` DECIMAL(5,2) NOT NULL,
+	issued DATETIME NOT NULL,
+	PRIMARY KEY (id),
+	/* INDEX `fk_sale_1_idx` (`userId` ASC) VISIBLE, */
+	/* INDEX `fk_sale_2_idx` (`customerId` ASC) VISIBLE, */
+	FOREIGN KEY (userId)
+		REFERENCES user (id),
+	FOREIGN KEY (customerId)
+		REFERENCES customer (id));
+
+CREATE TABLE IF NOT EXISTS salePaymentMethod
+       (id BIGINT NOT NULL AUTO_INCREMENT,
+        saleId BIGINT NOT NULL,
+        paymentMethodId BIGINT NOT NULL,
+	value DECIMAL(7,2) NOT NULL,
+	PRIMARY KEY (id, saleId, paymentMethodId),
+	/* INDEX `fk_salePaymentMethod_1_idx` (`saleId` ASC) VISIBLE, */
+	/* INDEX `fk_salePaymentMethod_2_idx` (`paymentMethodId` ASC) VISIBLE, */
+	FOREIGN KEY (saleId)
+		REFERENCES sale (id),
+	FOREIGN KEY (paymentMethodId)
+		REFERENCES paymentMethod (id));
+
+CREATE TABLE IF NOT EXISTS saleProduct
+       (id BIGINT NOT NULL AUTO_INCREMENT,
+        saleId BIGINT NOT NULL,
+	productId BIGINT NOT NULL,
+	quantity INT NOT NULL,
+	discount DECIMAL(5,2) NOT NULL,
+  	PRIMARY KEY (id, saleId, productId),
+  	/* INDEX `fk_saleProduct_1_idx` (`saleId` ASC) VISIBLE, */
+  	/* INDEX `fk_saleProduct_2_idx` (`productId` ASC) VISIBLE, */
+	 FOREIGN KEY (saleId)
+	 	 REFERENCES sale (id),
+	 FOREIGN KEY (productId)
+	 	 REFERENCES product (id));
+
+CREATE TABLE IF NOT EXISTS user
+       (id BIGINT NOT NULL,
+        password VARCHAR(255) NOT NULL,
+	permissions TINYINT UNSIGNED NOT NULL,
+	name VARCHAR(45) NOT NULL,
+	email VARCHAR(45) NOT NULL,
+	birthDate DATE NOT NULL,
+	created DATETIME NOT NULL,
+	updated DATETIME NOT NULL,
+  	PRIMARY KEY (id));
+
+SET SQL_MODE = @OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS;
