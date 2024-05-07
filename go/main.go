@@ -42,6 +42,7 @@ func main() {
 	http.HandleFunc("GET /", handler)
 	http.HandleFunc("POST /api/user/register", registerUser)
 	http.HandleFunc("POST /api/user/login", loginUser)
+	http.HandleFunc("POST /api/user/logout", logOutUser)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
