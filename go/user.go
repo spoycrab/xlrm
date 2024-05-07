@@ -1,26 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	Id int64 `json:"id"`
-	Pass string `json:"pass"`
-	Permissions uint8 `json:"permissions"`
-	Name string `json:"name"`
-	Email string `json:"email"`
-	BirthDate string `json:"birthDate"`
-	Created string `json:"created"`
-	Updated string `json:"updated"`
+	Id          int64  `json:"id"`
+	Pass        string `json:"pass"`
+	Permissions uint8  `json:"permissions"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	BirthDate   string `json:"birthDate"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
 }
 
 func getUserById(w http.ResponseWriter, r *http.Request) {
@@ -122,8 +123,8 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 
 func insertUser(user *User) (int64, error) {
 	result, err := db.Exec("INSERT INTO user VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);", user.Pass,
-			       user.Permissions, user.Name, user.Email, user.BirthDate,
-			       user.Created, user.Updated)
+		user.Permissions, user.Name, user.Email, user.BirthDate,
+		user.Created, user.Updated)
 	if err != nil {
 		return 0, err
 	}
@@ -139,8 +140,8 @@ func selectUserByEmail(value string) (User, error) {
 
 	row := db.QueryRow("SELECT * FROM user WHERE email = ?;", value)
 	if err := row.Scan(&result.Id, &result.Pass, &result.Permissions, &result.Name,
-			   &result.Email, &result.BirthDate, &result.Created,
-			   &result.Updated); err != nil {
+		&result.Email, &result.BirthDate, &result.Created,
+		&result.Updated); err != nil {
 		if err == sql.ErrNoRows {
 			return result, err
 		}
@@ -154,12 +155,63 @@ func selectUserById(value int64) (User, error) {
 
 	row := db.QueryRow("SELECT * FROM user WHERE id = ?;", value)
 	if err := row.Scan(&result.Id, &result.Pass, &result.Permissions, &result.Name,
-			   &result.Email, &result.BirthDate, &result.Created,
-			   &result.Updated); err != nil {
+		&result.Email, &result.BirthDate, &result.Created,
+		&result.Updated); err != nil {
 		if err == sql.ErrNoRows {
 			return result, err
 		}
 		return result, err
 	}
 	return result, nil
+}
+
+func validateUser(email, password string) (*User, error) {
+	var user User
+
+	user, err := selectUserByEmail(email)
+	if err != nil {
+		log.Print("E-mail Não Encontrado")
+		return nil, err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Pass), []byte(password)); err != nil {
+		log.Print("Senha Invalida")
+		return nil, err
+	}
+
+	return &user, nil //success
+}
+
+func loginUser(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		log.Print(w, "Erro ao ler formulario")
+		return
+	}
+	_, err = validateUser(user.Email, user.Pass)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	//Gerar Cookie de autenticação de usuario
+	var u = uuid.NewString()
+	var session Session
+	//Atribuir nivel de permissao de usuario para session(admin/usuario comum)
+	session.Permissions = user.Permissions
+	sessions[u] = session
+
+	cookie := http.Cookie{
+		Name:   "session",
+		Value:  u,
+		Path:   "/",
+		MaxAge: 3 * 60 * 60, //Tempo de duração de cookie (3 horas)
+	}
+	http.SetCookie(w, &cookie)
 }

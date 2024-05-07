@@ -10,14 +10,19 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
+type Session struct {
+	Permissions uint8
+}
+
 var db *sql.DB
+var sessions = make(map[string]Session)
 
 func main() {
 	config := mysql.Config{
-		User: os.Getenv("DBUSER"),
+		User:   os.Getenv("DBUSER"),
 		Passwd: os.Getenv("DBPASS"),
-		Net: "tcp",
-		Addr: "127.0.0.1:3306",
+		Net:    "tcp",
+		Addr:   "127.0.0.1:3306",
 		DBName: "xlrm",
 		/* ParseTime: true, */
 	}
@@ -36,9 +41,10 @@ func main() {
 	http.HandleFunc("GET /api/user/{id}", getUserById)
 	http.HandleFunc("GET /", handler)
 	http.HandleFunc("POST /api/user/register", registerUser)
+	http.HandleFunc("POST /api/user/login", loginUser)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello from the other side!");
+	fmt.Fprintln(w, "Hello from the other side!")
 }
