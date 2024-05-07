@@ -117,7 +117,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Location", strconv.FormatInt(id, 10))
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 }
 
 func insertUser(user *User) (int64, error) {
