@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -38,14 +37,33 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("GET /api/user/{id}", getUserById)
-	http.HandleFunc("GET /", handler)
-	http.HandleFunc("POST /api/user/register", registerUser)
-	http.HandleFunc("POST /api/user/login", loginUser)
-	http.HandleFunc("POST /api/user/logout", logOutUser)
+	http.HandleFunc("OPTIONS /api/user/{id}", corsHandler)
+	http.HandleFunc("OPTIONS /api/user/register", corsHandler)
+	http.HandleFunc("OPTIONS /api/user/login", corsHandler)
+	http.HandleFunc("OPTIONS /api/user/logout", corsHandler)
+
+	http.HandleFunc("GET /api/user/{id}", setCors(getUserById))
+	http.HandleFunc("POST /api/user/register", setCors(registerUser))
+	http.HandleFunc("POST /api/user/login", setCors(loginUser))
+	http.HandleFunc("POST /api/user/logout", setCors(logOutUser))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello from the other side!")
+func corsHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("info: %s %s\n", r.Method, r.URL.Path)
+	setCorsHeaders(w, r)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func setCors(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		setCorsHeaders(w, r)
+		f.ServeHTTP(w, r)
+	}
+}
+
+func setCorsHeaders(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
 }
