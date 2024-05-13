@@ -1,0 +1,9 @@
+input {
+    display: block;
+    /* width: 100%; */
+    padding: .5rem;
+    margin: 1rem0;
+    /* box-sizing: border-box; */
+}
+
+/* See: https://angular.io/guide/form-validation#control-status-css-classes */
