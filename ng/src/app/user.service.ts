@@ -36,4 +36,21 @@ export class UserService {
 	    catchError(this.errorHandler)
 	);
     }
+
+	login(user: User){
+		return this.http.post<User>(URL + "/login", user, OPTIONS).pipe(
+			catchError(this.errorHandler)
+			
+		)
+		.subscribe(
+			res => {
+			alert("OK!");
+			},
+			err => {
+			alert("FAIL!");
+			/* 'err.message' is a user-friendly message... */
+			console.log(err.message);
+			}
+		);
+	}
 }

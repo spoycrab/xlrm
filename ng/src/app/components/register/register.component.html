@@ -22,7 +22,7 @@
     </div>
 
     <label for="birth-date">Birth date: </label>
-    <input id="birth-date" type="date" min="2024-01-01" formControlName="birthDate" required />
+    <input id="birth-date" type="date" max="2006-01-01" formControlName="birthDate" required />
     <div *ngIf="birthDate!.invalid && (birthDate!.dirty || birthDate!.touched)">
 	<div *ngIf="birthDate!.errors?.['required']">Birth date is required.</div>
     </div>

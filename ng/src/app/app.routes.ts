@@ -1,9 +1,22 @@
 import { Routes } from '@angular/router';
 
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
+import { TelaInicioComponent } from './components/tela-inicio/tela-inicio.component';
+import { AprovarRejeitarUserComponent } from './components/aprovar-rejeitar-user/aprovar-rejeitar-user.component';
+import { ConcederAcessoComponent } from './components/conceder-acesso/conceder-acesso.component';
 
 export const ROUTES: Routes = [
+    {path: '', redirectTo: 'login', pathMatch: 'full' },
     { path: "login", component: LoginComponent },
     { path: "register", component: RegisterComponent },
+    {
+        path: "telaInicio", component: TelaInicioComponent
+    },
+    {
+        path: "estadoUsuario", component: AprovarRejeitarUserComponent
+    },
+    {
+        path: "concederAcesso", component: ConcederAcessoComponent
+    }
 ];
