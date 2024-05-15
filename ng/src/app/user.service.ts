@@ -37,20 +37,33 @@ export class UserService {
 	);
     }
 
-	login(user: User){
-		return this.http.post<User>(URL + "/login", user, OPTIONS).pipe(
+	login(user: User): Observable<any> {
+		return this.http.post<User>(URL + "/login", user, { observe: 'response' }).pipe(
 			catchError(this.errorHandler)
-			
-		)
-		.subscribe(
-			res => {
-			alert("OK!");
-			},
-			err => {
-			alert("FAIL!");
-			/* 'err.message' is a user-friendly message... */
-			console.log(err.message);
-			}
 		);
 	}
+
+    getUsuariosSemPermissao(): Observable<User[]> {
+        return this.http.get<User[]>(URL + "/selectUnregisteredUsers").pipe(
+            catchError(this.errorHandler)
+        );
+    }
+	getAllUsersAllowed(): Observable<User[]> {
+        return this.http.get<User[]>(URL + "/selectAllAllowed").pipe(
+            catchError(this.errorHandler)
+		);
+		};
+
+        getAllUsersAllowedWihoutPermissions(): Observable<User[]> {
+            return this.http.get<User[]>(URL + "/selectAllAllowedWithoutPermission").pipe(
+                catchError(this.errorHandler)
+            );
+            };
+
+    setUserPermission(data: { id: number, permissions: number }) {
+        return this.http.post(URL + "/setUserPermission", data).pipe(
+            catchError(this.errorHandler)
+        );
+    }
+
 }

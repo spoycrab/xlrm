@@ -55,8 +55,12 @@ h3{
 }
 
 #password{
-    /* border: 1px solid red; */
-    margin-top: 25px;
+    width: 350px;
+    height: 40px;
+    border-radius: 10px;
+    /* border: 1px solid yellow; */
+    border: none;
+    padding: 0px 20px;
 }
 
 #email p{

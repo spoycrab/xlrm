@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 import { User } from '../../user';
 import { UserService } from '../../user.service';
@@ -64,12 +65,22 @@ export class RegisterComponent {
 	user.birthDate = String(this.userForm.get("birthDate")!.value);
 	this.userService.register(user).subscribe(
 	    res => {
-		alert("OK!");
+		console.log("OK!");
+		Swal.fire({
+			title: "Cadastro feito com sucesso!",
+			text: "Bem vindo ao XLRM!",
+			icon: "success"
+		  });
 	    },
 	    err => {
-		alert("FAIL!");
+		console.log("FAIL!");
 		/* 'err.message' is a user-friendly message... */
 		console.log(err.message);
+		Swal.fire({
+			title: "Erro ao preencher os campos!",
+			text: "Verifique os campos e tente novamente!",
+			icon: "error"
+		  });
 	    }
 	);
 	/* this.userForm.reset(); */

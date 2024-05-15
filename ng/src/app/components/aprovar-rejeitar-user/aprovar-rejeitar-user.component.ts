@@ -1,12 +1,89 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { User } from '../../user';
+import { UserService } from '../../user.service';
+import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-aprovar-rejeitar-user',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './aprovar-rejeitar-user.component.html',
   styleUrl: './aprovar-rejeitar-user.component.css'
 })
 export class AprovarRejeitarUserComponent {
 
+    usuarios: User[] = [];
+
+  constructor(private userService: UserService) { }
+
+  
+ngOnInit(): void {
+  this.userService.getUsuariosSemPermissao().subscribe(
+    (response) => {
+      if (Array.isArray(response)) {
+        this.usuarios = response;
+        ;
+      } else {
+        this.usuarios = [response];
+      }
+      console.log(this.usuarios); // Certifique-se de que a variável usuarios seja uma matriz
+    },
+    (error) => {
+      console.error("Erro ao obter usuários não registrados 2:", error);
+      // Lidar com o erro, por exemplo, exibir uma mensagem de erro para o usuário
+    }
+  );
+}
+
+acaoUsuario(usuario: User) {
+  const id = usuario.id;
+
+  // Mostrar mensagem do SweetAlert com as opções "Aprovar" e "Reprovar"
+  Swal.fire({
+    title: 'Escolha uma opção',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Aprovar',
+    cancelButtonText: 'Reprovar'
+  }).then((result) => {
+    let permissions: number;
+
+    // Definir o valor de permission com base na opção escolhida
+    if (result.isConfirmed) {
+      permissions = 2; // Aprovar
+      Swal.fire({
+        title: "Aprovado!",
+        text: "O usuário já pode entrar",
+        icon: "success"
+      }).then(() => {
+        location.reload(); // Recarregar a página após exibir a mensagem de sucesso
+      });
+    } else {
+      permissions = 1; // Reprovar
+      Swal.fire({
+        title: "Rejeitado!",
+        text: "O usuário não foi aprovado.",
+        icon: "error"
+      }).then(() => {
+        location.reload(); // Recarregar a página após exibir a mensagem de erro
+      });
+    }
+
+    let data = {id, permissions}
+    console.log(data)
+    // Chamar setUserPermission com o ID do usuário e a permissão
+    this.userService.setUserPermission(data).subscribe(
+      () => {
+        console.log("Permissão definida com sucesso para o usuário com ID:", id);
+        // Atualizar a lista de usuários ou tomar outras ações necessárias
+      },
+      (error) => {
+        console.error("Erro ao definir permissão para o usuário com ID:", id, error);
+        // Lidar com o erro, por exemplo, exibir uma mensagem de erro para o usuário
+      }
+    );
+  });
+}
 }

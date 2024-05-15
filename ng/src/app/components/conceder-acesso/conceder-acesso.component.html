@@ -1,1 +1,26 @@
-<p>conceder-acesso works!</p>
+<p>conceder-acesso</p>
+
+<!-- Verificar se há usuários -->
+<ng-container *ngIf="usuarios.length > 0; else noUsuarios">
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Status</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of usuarios">
+        <td>{{ usuario.name }}</td>
+        <td>Pendente</td>
+        <td><button (click)="concederAcesso(usuario)">Ação</button></td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>
+
+<!-- Mensagem exibida quando não há usuários -->
+<ng-template #noUsuarios>
+  <p>Não há usuários.</p>
+</ng-template>

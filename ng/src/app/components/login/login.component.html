@@ -1,42 +1,35 @@
+<section>
+  <div>
+    <h3>XLRM</h3>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div id="fields">
+      <div id="email">
+        <p>Email:</p>
+        <input type="text" id="inputEmail" placeholder="Coloque o seu e-mail aqui" formControlName="email" > 
+      </div>
+      
+      <div id="password">
+        <p>Senha:</p>
+        <input type="password" id="password" placeholder="Coloque a sua senha" formControlName="pass1">
+      </div>
 
+      
+      <button id="loginButton" (click)="nomeDaFuncao()" type="submit">
+        <p>LOGIN</p>
+      </button>
+      
+      <div id="forgotPassword" >
+        <p>Esqueci minha senha</p>
+      </div>
 
+      <button id="Cadastro" type="button">
+        <a href="/register" id="linkCadastro">
+          Ainda não tem uma conta? Clique aqui para Cadastrar
+        </a>
+      </button>
+    </div>
+  </form>    
+  </div>
+</section>
 
-  
-
-    <section>
-        <div>
-          <h3>XLRM</h3>
-    
-          <div id="fields">
-            <div id="email">
-              <p>Email:</p>
-              <input type="text" id="inputEmail" placeholder="Coloque o seu e-mail aqui" > 
-            </div>
-            
-            <div id="password">
-              <p>Senha:</p>
-              <input type="password" id="inputEmail" placeholder="Coloque a sua senha">
-            </div>
-    
-            
-            <button id="loginButton" (click)="nomeDaFuncao()" type="submit">
-              <p>LOGIN</p>
-            </button>
-            
-            <div id="forgotPassword" >
-              <p>Esqueci minha senha</p>
-            </div>
-    
-            <button id="Cadastro" type="button">
-              <a href="/register" id="linkCadastro">
-                Ainda não tem uma conta? Clique aqui para Cadastrar
-              </a>
-            </button>
-              
-              
-    
-          </div>
-          
-        </div>
-      </section>
 
