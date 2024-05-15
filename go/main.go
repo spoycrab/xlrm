@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,10 +14,18 @@ type Session struct {
 	Permissions uint8
 }
 
+var ignoreCookies = false
+
 var db *sql.DB
 var sessions = make(map[string]Session)
 
 func main() {
+	for i := 1; i < len(os.Args); i++ {
+		if os.Args[i] == "--no-cookies" {
+			ignoreCookies = true
+		}
+	}
+
 	config := mysql.Config{
 		User:   os.Getenv("DBUSER"),
 		Passwd: os.Getenv("DBPASS"),
@@ -43,6 +52,8 @@ func main() {
 	http.HandleFunc("OPTIONS /api/user/login", corsHandler)
 	http.HandleFunc("OPTIONS /api/user/logout", corsHandler)
 	http.HandleFunc("OPTIONS /api/user/setUserPermission", corsHandler)
+	http.HandleFunc("OPTIONS /api/user/selectAllAllowed", corsHandler)
+	http.HandleFunc("OPTIONS /api/user/selectAllAllowedWithoutPermission", corsHandler)
 
 	http.HandleFunc("GET /api/user/{id}", setCors(getUserById))
 	http.HandleFunc("GET /api/user/selectUnregisteredUsers", setCors(selectUnregisteredUsers))
@@ -50,6 +61,9 @@ func main() {
 	http.HandleFunc("POST /api/user/login", setCors(loginUser))
 	http.HandleFunc("POST /api/user/logout", setCors(logOutUser))
 	http.HandleFunc("POST /api/user/setUserPermission", setCors(setUserPermission))
+	http.HandleFunc("GET /api/user/selectAllAllowed", setCors(selectAllAllowed))
+	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", setCors(selectAllAllowedWithoutPermission))
+	fmt.Println("Listening...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
