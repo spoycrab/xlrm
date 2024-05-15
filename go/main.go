@@ -38,14 +38,18 @@ func main() {
 	}
 
 	http.HandleFunc("OPTIONS /api/user/{id}", corsHandler)
+	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", corsHandler)
 	http.HandleFunc("OPTIONS /api/user/register", corsHandler)
 	http.HandleFunc("OPTIONS /api/user/login", corsHandler)
 	http.HandleFunc("OPTIONS /api/user/logout", corsHandler)
+	http.HandleFunc("OPTIONS /api/user/setUserPermission", corsHandler)
 
 	http.HandleFunc("GET /api/user/{id}", setCors(getUserById))
+	http.HandleFunc("GET /api/user/selectUnregisteredUsers", setCors(selectUnregisteredUsers))
 	http.HandleFunc("POST /api/user/register", setCors(registerUser))
 	http.HandleFunc("POST /api/user/login", setCors(loginUser))
 	http.HandleFunc("POST /api/user/logout", setCors(logOutUser))
+	http.HandleFunc("POST /api/user/setUserPermission", setCors(setUserPermission))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 

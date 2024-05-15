@@ -195,16 +195,19 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		log.Print(w, "Erro ao ler formulario")
 		return
 	}
+
 	_, err = validateUser(user.Email, user.Pass)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
+	//Buscar Permissao do usuario
+	var selectedUser, _ = selectUserByEmail(user.Email)
 	//Gerar Cookie de autenticação de usuario
 	var u = uuid.NewString()
 	var session Session
 	//Atribuir nivel de permissao de usuario para session(admin/usuario comum)
-	session.Permissions = user.Permissions
+	session.Permissions = selectedUser.Permissions
 	sessions[u] = session
 
 	cookie := http.Cookie{
@@ -214,9 +217,88 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		MaxAge: 3 * 60 * 60, //Tempo de duração de cookie (3 horas)
 	}
 	http.SetCookie(w, &cookie)
+	w.WriteHeader(http.StatusOK)
 }
 
 func logOutUser(w http.ResponseWriter, r *http.Request) {
+	// Excluir Cookie
 	http.SetCookie(w, &http.Cookie{Name: "session", Value: "", Path: "/", MaxAge: -1})
-	fmt.Fprintf(w, "Cookie de Sesssao Apagado")
+	// Excluir sessao do map sessions
+	for key := range sessions {
+		delete(sessions, key)
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func selectUnregisteredUsers(w http.ResponseWriter, r *http.Request) {
+	row, err := db.Query("SELECT * FROM user WHERE permissions = 0;")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer row.Close()
+
+	var users []User
+
+	for row.Next() {
+		var user User
+		err := row.Scan(&user.Id, &user.Pass, &user.Permissions, &user.Name,
+			&user.Email, &user.BirthDate, &user.Created,
+			&user.Updated)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		users = append(users, user)
+	}
+
+	for _, user := range users {
+		user.Pass = ""
+		jsonData, err := json.Marshal(user)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(string(jsonData))
+	}
+}
+
+func setUserPermission(w http.ResponseWriter, r *http.Request) {
+
+	// Verifica se usuario logado tem permissao de admin (verificando o cookie)
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		fmt.Fprintln(w, "Cookie de sessão não encontrado")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	permission := sessions[cookie.Value]
+	if permission.Permissions < 1 {
+		log.Print("Usuario nao é admin")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	//Receber usuario
+	// var user User
+	// err := json.NewDecoder(r.Body).Decode(&user)
+	// if err != nil {
+	// 	log.Print(w, "Erro ao ler formulario")
+	// 	return
+	// }
+
+	// result, err := selectUserById(user.Id)
+	// if err != nil {
+	// 	log.Print("Usuario Nao Encontrado")
+	// 	return
+	// }
+
+	// result, err := db.Exec("INSERT INTO user VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);", user.Pass,
+	// 	user.Permissions, user.Name, user.Email, user.BirthDate,
+	// 	user.Created, user.Updated)
+	// if err != nil {
+	// 	return
+	// }
+
+	//setar permissao
+
 }
