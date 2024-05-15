@@ -1,0 +1,30 @@
+<h3>Create account!</h3>
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <label for="email">E-mail: </label>
+    <input id="email" type="text" formControlName="email" required />
+    <div *ngIf="email!.invalid && (email!.dirty || email!.touched)">
+	<div *ngIf="email!.errors?.['required']">E-mail is required.</div>
+    </div>
+
+    <label for="pass">Password: </label>
+    <input id="pass" type="password" formControlName="pass1" required />
+    <div *ngIf="pass1!.invalid && (pass1!.dirty || pass1!.touched)">
+	<div *ngIf="pass1!.errors?.['required']">Password is required.</div>
+	<div *ngIf="pass1!.errors?.['minlength']">Password must be at least 8 characters long.</div>
+    </div>
+    <label for="confirm">Confirm: </label>
+    <input id="confirm" type="password" formControlName="pass2" required />
+
+    <label for="name">Name: </label>
+    <input id="name" type="text" formControlName="name" required >
+    <div *ngIf="name!.invalid && (name!.dirty || name!.touched)">
+	<div *ngIf="name!.errors?.['required']">Name is required.</div>
+    </div>
+
+    <label for="birth-date">Birth date: </label>
+    <input id="birth-date" type="date" max="2006-01-01" formControlName="birthDate" required />
+    <div *ngIf="birthDate!.invalid && (birthDate!.dirty || birthDate!.touched)">
+	<div *ngIf="birthDate!.errors?.['required']">Birth date is required.</div>
+    </div>
+    <button type="submit">Create account</button>
+</form>

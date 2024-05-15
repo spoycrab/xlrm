@@ -85,6 +85,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		log.Println("Email is invalid or already taken.")
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"err": "Email is invalid or already taken."}` + "\n");
 		return
 	} else if err != nil && err != sql.ErrNoRows {
 		log.Println("'err != sql.ErrNoRows'")
@@ -117,8 +118,27 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	ret, err := selectUserById(id)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	/* ret.Pass = nil */
+	ret.Pass = ""
+
+	b, err := json.Marshal(ret)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Location", strconv.FormatInt(id, 10))
 	w.WriteHeader(http.StatusCreated)
+	/* w.Write(b) */
+	fmt.Fprintf(w, "%s\n", string(b))
 }
 
 func insertUser(user *User) (int64, error) {
