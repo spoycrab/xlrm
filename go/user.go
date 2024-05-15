@@ -262,9 +262,10 @@ func selectUnregisteredUsers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Recebe ID,Permissao do usuario por json
 func setUserPermission(w http.ResponseWriter, r *http.Request) {
 
-	// Verifica se usuario logado tem permissao de admin (verificando o cookie)
+	// Verifica se usuario logado tem permissao de admin
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		fmt.Fprintln(w, "Cookie de sessão não encontrado")
@@ -272,33 +273,41 @@ func setUserPermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	permission := sessions[cookie.Value]
-	if permission.Permissions < 1 {
-		log.Print("Usuario nao é admin")
+	if permission.Permissions < 3 { //Lembrar de Trocar de nivel de permissao correto após ser definido nas regras de negocio
+		log.Print("Usuario não é admin")
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
 	//Receber usuario
-	// var user User
-	// err := json.NewDecoder(r.Body).Decode(&user)
-	// if err != nil {
-	// 	log.Print(w, "Erro ao ler formulario")
-	// 	return
-	// }
+	var user User
+	err = json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		log.Print(w, "Erro ao ler formulario")
+		return
+	}
 
-	// result, err := selectUserById(user.Id)
-	// if err != nil {
-	// 	log.Print("Usuario Nao Encontrado")
-	// 	return
-	// }
+	_, err = selectUserById(user.Id)
+	if err != nil {
+		log.Print(w, "Usuario Nao Encontrado")
+		return
+	}
 
-	// result, err := db.Exec("INSERT INTO user VALUES (NULL, ?, ?, ?, ?, ?, ?, ?);", user.Pass,
-	// 	user.Permissions, user.Name, user.Email, user.BirthDate,
-	// 	user.Created, user.Updated)
-	// if err != nil {
-	// 	return
-	// }
-
-	//setar permissao
-
+	updateQuery := `UPDATE user SET 
+					permissions = ?, updated = ?
+					WHERE id = ?`
+	stmt, err := db.Prepare(updateQuery)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer stmt.Close()
+	now := time.Now().Format(time.DateTime)
+	_, err = stmt.Exec(user.Permissions, now, user.Id)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Usuario Atualizado com Sucesso")
+	w.WriteHeader(http.StatusOK)
 }
