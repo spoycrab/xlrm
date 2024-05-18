@@ -3,20 +3,26 @@ import { User } from '../../user';
 import { UserService } from '../../user.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 
 
 @Component({
   selector: 'app-aprovar-rejeitar-user',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule],
   templateUrl: './aprovar-rejeitar-user.component.html',
   styleUrl: './aprovar-rejeitar-user.component.css'
 })
 export class AprovarRejeitarUserComponent {
 
     usuarios: User[] = [];
+    displayedColumns: string[] = ['name', 'status', 'action'];
+  dataSource = new MatTableDataSource<User>();
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   
 ngOnInit(): void {
@@ -86,4 +92,8 @@ acaoUsuario(usuario: User) {
     );
   });
 }
+
+goToTelaInicio(): void {
+  this.router.navigate(['/telaInicio']);
+  }
 }

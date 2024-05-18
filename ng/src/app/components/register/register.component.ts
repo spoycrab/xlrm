@@ -2,6 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 import { User } from '../../user';
 import { UserService } from '../../user.service';
@@ -9,14 +15,22 @@ import { UserService } from '../../user.service';
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [
+		CommonModule,
+		 ReactiveFormsModule,
+		 MatInputModule,
+		 MatFormFieldModule,
+		 MatButtonModule,
+		 MatCardModule,
+		 MatIconModule
+		],
     templateUrl: './register.component.html',
     styleUrl: './register.component.css'
 })
 export class RegisterComponent {
     userForm: FormGroup;
 
-    constructor(private userService: UserService) { }
+    constructor(private userService: UserService, private router: Router) { }
 
     get email() {
 	return this.userForm.get("email");
@@ -85,4 +99,7 @@ export class RegisterComponent {
 	);
 	/* this.userForm.reset(); */
     }
+	goToLogin(): void {
+		this.router.navigate(['/login']);
+	  }
 }

@@ -141,3 +141,16 @@ h3{
 /* #Cadastro #linkCadastro{
     
 } */
+.full-width {
+  width: 100%;
+}
+
+.button-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#forgotPassword {
+  margin-top: 10px;
+  text-align: center;
+}
