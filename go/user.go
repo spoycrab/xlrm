@@ -289,35 +289,31 @@ func selectUnregisteredUsers(w http.ResponseWriter, r *http.Request) {
 func setUserPermission(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	//if !ignoreCookies {
-	//	cookie, err := r.Cookie("session")
-	//	if err != nil {
-	// fmt.Fprintln(w, "Cookie de sessão não encontrado")
-	//		w.WriteHeader(http.StatusUnauthorized)
-	//		return
-	//	}
+	if cookies {
+		cookie, err := r.Cookie("session")
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
 
-	// TODO
-	//	session := sessions[cookie.Value]
-	//	if session.Permissions < 3 {
-	// log.Print("Usuario não é admin")
-	//		w.WriteHeader(http.StatusForbidden)
-	//		return
-	//	}
-	//	}
+		// TODO
+		session := sessions[cookie.Value]
+		if session.Permissions < 3 {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+	}
 
 	var user User
 
 	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		// log.Print(w, "Erro ao ler formulario")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	_, err = selectUserById(user.Id)
 	if err != nil {
-		// log.Print(w, "Usuario Nao Encontrado")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -337,7 +333,6 @@ func setUserPermission(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	// log.Println("Usuario Atualizado com Sucesso")
 	w.WriteHeader(http.StatusOK)
 }
 

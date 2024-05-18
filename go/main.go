@@ -14,15 +14,17 @@ type Session struct {
 	Permissions uint8
 }
 
-var ignoreCookies = false
+var cookies = true
 
 var db *sql.DB
 var sessions = make(map[string]Session)
 
 func main() {
 	for i := 1; i < len(os.Args); i++ {
-		if os.Args[i] == "--no-cookies" {
-			ignoreCookies = true
+		switch os.Args[i] {
+		case "--no-cookies":
+			cookies = false
+		default:
 		}
 	}
 
