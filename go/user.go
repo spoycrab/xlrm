@@ -16,7 +16,7 @@ import (
 type User struct {
 	Id          int64  `json:"id"`
 	Pass        string `json:"pass"`
-	Permissions uint8  `json:"permissions"`
+	Permissions int  `json:"permissions"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	BirthDate   string `json:"birthDate"`
@@ -190,63 +190,74 @@ func validateUser(email, password string) (*User, error) {
 
 	user, err := selectUserByEmail(email)
 	if err != nil {
-		log.Print("E-mail Não Encontrado")
+		log.Println(err)
 		return nil, err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Pass), []byte(password)); err != nil {
-		log.Print("Senha Invalida")
+		log.Println(err)
 		return nil, err
 	}
-
-	return &user, nil //success
+	return &user, nil
 }
 
-func loginUser(w http.ResponseWriter, r *http.Request) {
-
+func login(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
 		return
 	}
 
 	var user User
+
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		log.Print(w, "Erro ao ler formulario")
+		log.Println(err)
 		return
 	}
 
 	_, err = validateUser(user.Email, user.Pass)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
-	//Buscar Permissao do usuario
-	var selectedUser, _ = selectUserByEmail(user.Email)
-	//Gerar Cookie de autenticação de usuario
-	var u = uuid.NewString()
-	var session Session
-	//Atribuir nivel de permissao de usuario para session(admin/usuario comum)
-	session.Permissions = selectedUser.Permissions
-	sessions[u] = session
+	result, err := selectUserByEmail(user.Email)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
 
+	u := uuid.NewString()
+	sessions[u] = Session{result.Permissions}
 	cookie := http.Cookie{
 		Name:   "session",
 		Value:  u,
 		Path:   "/",
-		MaxAge: 3 * 60 * 60, //Tempo de duração de cookie (3 horas)
+		MaxAge: 3 * 60 * 60,
 	}
 	http.SetCookie(w, &cookie)
 	w.WriteHeader(http.StatusOK)
 }
 
-func logOutUser(w http.ResponseWriter, r *http.Request) {
-	// Excluir Cookie
-	http.SetCookie(w, &http.Cookie{Name: "session", Value: "", Path: "/", MaxAge: -1})
-	// Excluir sessao do map sessions
-	for key := range sessions {
-		delete(sessions, key)
+func logout(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session")
+	if err == http.ErrNoCookie {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
+	err = uuid.Validate(cookie.Value)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	delete(sessions, cookie.Value)
+	cookie.Value = ""
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
 	w.WriteHeader(http.StatusOK)
 }
 

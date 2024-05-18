@@ -11,7 +11,7 @@ import (
 )
 
 type Session struct {
-	Permissions uint8
+	Permissions int
 }
 
 var cookies = true
