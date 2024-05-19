@@ -31,7 +31,7 @@ ngOnInit(): void {
       if (Array.isArray(response)) {
         this.usuarios = response;
         ;
-      } else {
+      } else if (response != null) {
         this.usuarios = [response];
       }
       console.log(this.usuarios); // Certifique-se de que a variável usuarios seja uma matriz
