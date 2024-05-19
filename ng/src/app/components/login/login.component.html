@@ -2,34 +2,46 @@
   <div>
     <h3>XLRM</h3>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <div id="fields">
-      <div id="email">
-        <p>Email:</p>
-        <input type="text" id="inputEmail" placeholder="Coloque o seu e-mail aqui" formControlName="email" > 
-      </div>
-      
-      <div id="password">
-        <p>Senha:</p>
-        <input type="password" id="password" placeholder="Coloque a sua senha" formControlName="pass1">
-      </div>
-
-      
-      <button id="loginButton" (click)="nomeDaFuncao()" type="submit">
-        <p>LOGIN</p>
-      </button>
-      
-      <div id="forgotPassword" >
-        <p>Esqueci minha senha</p>
-      </div>
-
-      <button id="Cadastro" type="button">
-        <a href="/register" id="linkCadastro">
-          Ainda não tem uma conta? Clique aqui para Cadastrar
-        </a>
-      </button>
-    </div>
-  </form>    
+      <mat-card>
+        <mat-card-content>
+          <div id="fields">
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" id="inputEmail" placeholder="Coloque o seu e-mail aqui" formControlName="email">
+              <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+                O email é obrigatório
+              </mat-error>
+              <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+                Insira um email válido
+              </mat-error>
+            </mat-form-field>
+            
+            <mat-form-field appearance="fill" class="full-width">
+              <mat-label>Senha</mat-label>
+              <input matInput type="password" id="password" placeholder="Coloque a sua senha" formControlName="pass1">
+              <mat-error *ngIf="loginForm.get('pass1')?.hasError('required')">
+                A senha é obrigatória
+              </mat-error>
+            </mat-form-field>
+            
+            <div class="button-container">
+              <button mat-raised-button color="primary" id="loginButton" type="submit">
+                LOGIN
+              </button>
+            </div>
+            
+            <div id="forgotPassword">
+              <a mat-button (click)="forgotPassword()">Esqueci minha senha</a>
+            </div>
+            
+            <div class="button-container">
+              <button mat-raised-button id="Cadastro" color="accent" type="button" (click)="navigateToRegister()">
+                Ainda não tem uma conta? Clique aqui para Cadastrar
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </form>    
   </div>
 </section>
-
-

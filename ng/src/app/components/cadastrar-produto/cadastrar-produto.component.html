@@ -1,0 +1,171 @@
+<!-- <p>cadastrar-produto works!</p> -->
+
+<!-- <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <section>
+        <h3>XLRM</h3>
+        <h4>Cadastro de Produto</h4>
+        <a href="telaInicio">
+            <img src="assets/Vector-removebg-preview.png" id="iconeVoltar">
+        </a>
+        <div id="fields">
+            <div id="inputProductName">
+                <label for="productName">Nome do Produto: </label>
+                <input id="productName" type="text" formControlName="productName" required >
+                <div *ngIf="productName!.invalid && (productName!.dirty || productName!.touched)">
+                <div *ngIf="productName!.errors?.['required']">Nome is required.</div>
+                </div>
+            </div>
+
+
+            <div id="email1">
+                <label for="description">Descrição: </label>
+                <input id="description" type="text" formControlName="description" required />
+                <div *ngIf="description!.invalid && (description!.dirty || description!.touched)">
+                <div *ngIf="description!.errors?.['required']">Description is required.</div>
+                </div>
+            </div>
+
+            <div id="email1">
+                <label for="quantity">Quantidade: </label>
+                <input id="quantity" type="text" formControlName="quantity" required />
+                <div *ngIf="quantity!.invalid && (quantity!.dirty || quantity!.touched)">
+                <div *ngIf="quantity!.errors?.['required']">Quantity is required.</div>
+                </div>
+            </div>
+
+
+            <div id="chegadaEstoque">
+                <label for="priceTag">Preço: </label>
+                <input id="priceTag" type="number" formControlName="priceTag" required />
+                <div *ngIf="priceTag!.invalid && (priceTag!.dirty || priceTag!.touched)">
+                <div *ngIf="priceTag!.errors?.['required']">Data de Chegada is required.</div>
+                </div>
+            </div>
+
+
+            <div id="Manufacture">
+                <label for="factory">Manufatura:</label>
+                <input type="text" id="factory" formControlName="factory" required>
+            </div>
+            <button id="loginButton" ><p>Subscribe</p></button>
+        </div>
+    </section>
+</form> -->
+
+
+<!-- <section>
+    <mat-form-field [formGroup]="productForm">
+        <mat-label>Nome do Produto: </mat-label>
+        <input matInput formControlName="productName" required>
+        <mat-error *ngIf="productName!.invalid && (productName!.dirty || productName!.touched)">
+          Nome é obrigatório.
+        </mat-error>
+
+        <br>
+
+        
+    </mat-form-field>
+
+    <mat-form-field [formGroup]="productForm">
+        <mat-label>Descrição: </mat-label>
+        <input matInput formControlName="description" required>
+        <mat-error *ngIf="description!.invalid && (description!.dirty || description!.touched)">
+          Descrição é obrigatório.
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field [formGroup]="productForm">
+        <mat-label>Quantidade: </mat-label>
+        <input matInput formControlName="quantity" required>
+        <mat-error *ngIf="quantity!.invalid && (quantity!.dirty || quantity!.touched)">
+          Quantidade é obrigatório.
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field [formGroup]="productForm">
+        <mat-label>Chegada em Estoque: </mat-label>
+        <input  type="date" matInput formControlName="arriveDate" required>
+        <mat-error *ngIf="arriveDate!.invalid && (arriveDate!.dirty || arriveDate!.touched)">
+          Data é obrigatório.
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field [formGroup]="productForm">
+        <mat-label>Manufatura:</mat-label>
+        <input matInput formControlName="factory" required>
+        <mat-error *ngIf="factory!.invalid && (factory!.dirty || factory!.touched)">
+            Manufacture é obrigatório.
+        </mat-error>
+    </mat-form-field>
+      
+      
+      
+</section> -->
+
+<!-- Repita o processo para os outros campos -->
+
+
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <section>
+      <h3>XLRM</h3>
+      <h4>Cadastro de Produto</h4>
+      <a href="telaInicio">
+        <img src="assets/Vector-removebg-preview.png" id="iconeVoltar">
+      </a>
+      <div id="fields">
+        <mat-form-field>
+          <mat-label>Nome do Produto:</mat-label>
+          <input matInput id="productName" formControlName="productName" required>
+          <mat-error *ngIf="productName!.invalid && (productName!.dirty || productName!.touched)">
+            Nome do produto é obrigatório.
+          </mat-error>
+        </mat-form-field>
+        
+        <br>
+
+        <mat-form-field>
+          <mat-label>Descrição:</mat-label>
+          <input matInput id="description" formControlName="description" required>
+          <mat-error *ngIf="description!.invalid && (description!.dirty || description!.touched)">
+            Descrição é obrigatória.
+          </mat-error>
+        </mat-form-field>
+
+        <br>
+  
+        <mat-form-field>
+          <mat-label>Quantidade:</mat-label>
+          <input matInput id="quantity" type="number" formControlName="quantity" required>
+          <mat-error *ngIf="quantity!.invalid && (quantity!.dirty || quantity!.touched)">
+            Quantidade do produto é obrigatório.
+          </mat-error>
+        </mat-form-field>
+  
+        <br>
+
+        <mat-form-field>
+          <mat-label>Preço:</mat-label>
+          <input matInput id="priceTag" type="number" formControlName="priceTag" required>
+          <mat-error *ngIf="priceTag!.invalid && (priceTag!.dirty || priceTag!.touched)">
+            Preço do produto é obrigatório.
+          </mat-error>
+        </mat-form-field>
+  
+        <br>
+
+        <mat-form-field>
+          <mat-label>Manufatura:</mat-label>
+          <input matInput type="text" id="factory" formControlName="factory" required>
+        </mat-form-field>
+        
+
+
+        <div id="button-container">
+            <button mat-button id="loginButton">
+            <p>Subscribe Product</p>
+            </button>
+        </div>
+      </div>
+    </section>
+  </form>
+  

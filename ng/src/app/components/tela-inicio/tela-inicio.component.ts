@@ -25,4 +25,8 @@ export class TelaInicioComponent {
     this.router.navigate(['/concederAcesso']);
   }
 
+  onNavigate3(){
+    this.router.navigate(['/cadastrarProduto']);
+  }
+
 }

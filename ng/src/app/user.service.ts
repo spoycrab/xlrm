@@ -37,11 +37,14 @@ export class UserService {
 	);
     }
 
-	login(user: User): Observable<any> {
-		return this.http.post<User>(URL + "/login", user, { observe: 'response' }).pipe(
-			catchError(this.errorHandler)
-		);
-	}
+    login(user: User): Observable<any> {
+        return this.http.post<User>(URL + "/login", user, { 
+            observe: 'response',
+            withCredentials: true  // Habilitar o envio de cookies
+        }).pipe(
+            catchError(this.errorHandler)
+        );
+    }
 
     getUsuariosSemPermissao(): Observable<User[]> {
         return this.http.get<User[]>(URL + "/selectUnregisteredUsers").pipe(

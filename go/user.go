@@ -85,7 +85,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		log.Println("Email is invalid or already taken.")
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, `{"err": "Email is invalid or already taken."}` + "\n");
+		fmt.Fprintf(w, `{"err": "Email is invalid or already taken."}`+"\n")
 		return
 	} else if err != nil && err != sql.ErrNoRows {
 		log.Println("'err != sql.ErrNoRows'")
@@ -265,8 +265,8 @@ func selectUnregisteredUsers(w http.ResponseWriter, r *http.Request) {
 		var user User
 
 		err := row.Scan(&user.Id, &user.Pass, &user.Permissions, &user.Name,
-			        &user.Email, &user.BirthDate, &user.Created,
-			        &user.Updated)
+			&user.Email, &user.BirthDate, &user.Created,
+			&user.Updated)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -289,22 +289,22 @@ func selectUnregisteredUsers(w http.ResponseWriter, r *http.Request) {
 func setUserPermission(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	if !ignoreCookies {
-		cookie, err := r.Cookie("session")
-		if err != nil {
-			// fmt.Fprintln(w, "Cookie de sessão não encontrado")
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
+	//if !ignoreCookies {
+	//	cookie, err := r.Cookie("session")
+	//	if err != nil {
+	// fmt.Fprintln(w, "Cookie de sessão não encontrado")
+	//		w.WriteHeader(http.StatusUnauthorized)
+	//		return
+	//	}
 
-		// TODO
-		session := sessions[cookie.Value]
-		if session.Permissions < 3 {
-			// log.Print("Usuario não é admin")
-			w.WriteHeader(http.StatusForbidden)
-			return
-		}
-	}
+	// TODO
+	//	session := sessions[cookie.Value]
+	//	if session.Permissions < 3 {
+	// log.Print("Usuario não é admin")
+	//		w.WriteHeader(http.StatusForbidden)
+	//		return
+	//	}
+	//	}
 
 	var user User
 
@@ -356,8 +356,8 @@ func selectAllAllowed(w http.ResponseWriter, r *http.Request) {
 		var user User
 
 		err = row.Scan(&user.Id, &user.Pass, &user.Permissions, &user.Name,
-			       &user.Email, &user.BirthDate, &user.Created,
-			       &user.Updated)
+			&user.Email, &user.BirthDate, &user.Created,
+			&user.Updated)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -392,8 +392,8 @@ func selectAllAllowedWithoutPermission(w http.ResponseWriter, r *http.Request) {
 		var user User
 
 		err = row.Scan(&user.Id, &user.Pass, &user.Permissions, &user.Name,
-			       &user.Email, &user.BirthDate, &user.Created,
-			       &user.Updated)
+			&user.Email, &user.BirthDate, &user.Created,
+			&user.Updated)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)

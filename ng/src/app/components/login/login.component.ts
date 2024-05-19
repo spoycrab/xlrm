@@ -4,11 +4,24 @@ import { Router } from '@angular/router';
 import { UserService } from '../../user.service';
 import { User } from '../../user';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    MatCardModule,
+    CommonModule
+
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -86,5 +99,13 @@ export class LoginComponent {
   nomeDaFuncao(){
     // Você pode remover ou ajustar esta função conforme necessário
     console.log("Yeah, it's working");
+  }
+  forgotPassword(): void {
+    console.log('Esqueci minha senha');
+    // Adicione sua lógica para recuperação de senha aqui
+  }
+
+  navigateToRegister() {
+    this.router.navigate(['/register']); // Função de redirecionamento para /register
   }
 }

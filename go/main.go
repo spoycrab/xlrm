@@ -45,7 +45,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	//User
 	http.HandleFunc("OPTIONS /api/user/{id}", corsHandler)
 	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", corsHandler)
 	http.HandleFunc("OPTIONS /api/user/register", corsHandler)
@@ -63,6 +63,21 @@ func main() {
 	http.HandleFunc("POST /api/user/setUserPermission", setCors(setUserPermission))
 	http.HandleFunc("GET /api/user/selectAllAllowed", setCors(selectAllAllowed))
 	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", setCors(selectAllAllowedWithoutPermission))
+
+	//Product
+	http.HandleFunc("OPTIONS /api/product/{id}", corsHandler)
+	http.HandleFunc("OPTIONS /api/product/register", corsHandler)
+
+	http.HandleFunc("GET /api/product/{id}", setCors(getProductById))
+	http.HandleFunc("POST /api/product/register", setCors(registerProduct))
+
+	//Customer
+	http.HandleFunc("OPTIONS /api/customer/{id}", corsHandler)
+	http.HandleFunc("OPTIONS /api/customer/register", corsHandler)
+
+	http.HandleFunc("GET /api/customer/{id}", setCors(getCustomerById))
+	http.HandleFunc("POST /api/customer/register", setCors(registerCustomer))
+
 	fmt.Println("Listening...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
