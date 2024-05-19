@@ -6,6 +6,7 @@ import { TelaInicioComponent } from './components/tela-inicio/tela-inicio.compon
 import { AprovarRejeitarUserComponent } from './components/aprovar-rejeitar-user/aprovar-rejeitar-user.component';
 import { ConcederAcessoComponent } from './components/conceder-acesso/conceder-acesso.component';
 import { CadastrarProdutoComponent } from './components/cadastrar-produto/cadastrar-produto.component';
+import { CadastrarClienteComponent } from './components/cadastrar-cliente/cadastrar-cliente.component';
 
 export const ROUTES: Routes = [
     {path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -22,5 +23,8 @@ export const ROUTES: Routes = [
     },
     {
         path: "cadastrarProduto", component: CadastrarProdutoComponent  
-    }
+    },
+    {
+    path: "cadastrarCliente", component: CadastrarClienteComponent
+}
 ];
