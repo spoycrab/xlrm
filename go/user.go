@@ -16,7 +16,7 @@ import (
 type User struct {
 	Id          int64  `json:"id"`
 	Pass        string `json:"pass"`
-	Permissions int  `json:"permissions"`
+	Permissions int    `json:"permissions"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	BirthDate   string `json:"birthDate"`

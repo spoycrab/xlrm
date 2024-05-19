@@ -58,6 +58,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	http.HandleFunc("OPTIONS /api/customer/{id}", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/register", cors(nil))
+
 	http.HandleFunc("OPTIONS /api/user/{id}", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/login", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/logout", cors(nil))
@@ -67,10 +70,19 @@ func main() {
 	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/setUserPermission", cors(nil))
 
+	http.HandleFunc("OPTIONS /api/product/{id}", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/register", cors(nil))
+
+	http.HandleFunc("GET /api/customer/{id}", cors(getCustomerById))
+
 	http.HandleFunc("GET /api/user/{id}", cors(getUserById))
 	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))
 	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", cors(selectAllAllowedWithoutPermission))
 	http.HandleFunc("GET /api/user/selectUnregisteredUsers", cors(selectUnregisteredUsers))
+
+	http.HandleFunc("GET /api/product/{id}", cors(getProductById))
+
+	http.HandleFunc("POST /api/customer/register", cors(registerCustomer))
 
 	/* http.HandleFunc("POST /api/user/login", cors(auth(login, PerCust | PerProduct | PerSale | PerAll))) */
 	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, PerCust | PerProduct | PerSale | PerAll))) */
@@ -78,6 +90,8 @@ func main() {
 	http.HandleFunc("POST /api/user/logout", cors(logout))
 	http.HandleFunc("POST /api/user/register", cors(registerUser))
 	http.HandleFunc("POST /api/user/setUserPermission", cors(setUserPermission))
+
+	http.HandleFunc("POST /api/product/register", cors(registerProduct))
 	log.Println("Listening...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
