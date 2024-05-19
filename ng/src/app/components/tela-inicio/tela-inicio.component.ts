@@ -31,4 +31,8 @@ export class TelaInicioComponent {
 		this.router.navigate(['/login']);
 	  }
 
+  onNavigate3(){
+    this.router.navigate(['/cadastrarProduto']);
+  }
+
 }

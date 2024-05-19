@@ -1,3 +1,5 @@
+
+
 input {
     display: block;
     /* width: 100%; */
@@ -8,22 +10,25 @@ input {
 
 /* See: https://angular.io/guide/form-validation#control-status-css-classes */
 
+
+
+
+
 body{
     background: #01B0EF;
     border: 1px solid #01B0EF;
     width: auto;
 }
-
+    
 section{
     width: 560px;
-    height: 800px;
+    height: 830px;
     margin-top: 100px;
     margin-bottom: 100px;
     margin-left: auto;
     margin-right: auto;
     background-color: #D9D9D9;
     border-radius: 30px;
-    
 }
 
 h3{
@@ -38,8 +43,19 @@ h3{
     
 }
 
+h4{
+    color: #00427B;
+    font-size: 20px;
+    /* border: 1px solid black; */
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 15px;
+}
+
 #iconeVoltar{
     margin-left: 40px;
+    margin-bottom: 30px;
     /* border: 1px solid black; */
     /* size: 50%; */
 }
@@ -55,16 +71,31 @@ h3{
     font-weight: 400;
 }
 
-#email{
+#description{
     width: 350px;
     height: 40px;
     border-radius: 10px;
     /* border: 1px solid yellow; */
-    /* border: none; */
+    border: none;
     padding: 0px 10px;
+    margin-bottom: 30px;
 }
 
-#inputEmail{
+/* #email1{
+    border: 1px solid gray;
+} */
+
+#quantity{
+    width: 350px;
+    height: 40px;
+    border-radius: 10px;
+    /* border: 1px solid yellow; */
+    border: none;
+    padding: 0px 10px;
+    margin-bottom: 30px;
+}
+
+#productName{
     width: 350px;
     height: 40px;
     border-radius: 10px;
@@ -73,7 +104,7 @@ h3{
     padding: 0px 10px;
 }
 
-#bigPassword{
+#pass1{
     width: 350px;
     height: 40px;
     border-radius: 10px;
@@ -91,13 +122,13 @@ h3{
     padding: 0px 10px;
 }
 
-#inputData{
+#priceTag {
     width: 350px;
     height: 40px;
     border-radius: 10px;
     /* border: 1px solid yellow; */
     border: none;
-    padding: 0px 15px;
+    padding: 0px 10px;
 }
 
 ::placeholder{
@@ -116,12 +147,13 @@ h3{
     margin-top: 30px;
 }
 
-#name{
+#inputProductName{
     /* border: 1px solid red; */
-    margin-top: 30px;
+    margin-top: 10px;
+    margin-bottom: 30px;
 }
 
-#dataNascimento{
+#chegadaEstoque{
     /* border: 1px solid red; */
     margin-top: 30px;
 }
@@ -132,7 +164,7 @@ h3{
     margin-right: 10%;
 } */
 
-#email p{
+#description p{
     /* border: 1px solid purple; */
     padding-top: 5px;
 }
@@ -142,17 +174,37 @@ h3{
     padding-top: 5px;
 }
 
+#Manufacture{
+    margin-top: 30px;
+    /* border: 1px solid pink; */
+}
+
+#factory{
+    width: 350px;
+    height: 40px;
+    border-radius: 10px;
+    /* border: 1px solid yellow; */
+    border: none;
+    padding: 0px 10px;
+}
+
 /*Botão de Login*/
 
 #loginButton{
     background-color: #00427B;
-    /* border: 1px solid black; */
-    border: none;
-    margin-left: 20%;
+    border: 1px solid black;
+    /* border: none; */
+    margin-left: 25%;
     width: 200px;
     height: 60px;
     margin-top: 40px;
     border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.5s ease;
+}
+
+#loginButton:hover{
+    background-color: #00254A;
 }
 
 #loginButton p{
@@ -205,69 +257,48 @@ h3{
     
 } */
 
-section {
+/* :host {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 30px;
+    width: 350px;
+    height: 400px;
+    border-radius: 10px;
+    border: 1px solid yellow;
+    border: none;
+    padding: 0px 10px;
+  } */
+  
+mat-form-field{
+    /* border: 1px solid black; */
+    display: flex;
+    width: 450px;
+    margin-left: auto;
+    margin-right: auto;
     align-items: center;
+    justify-content: center;
+    /* width: fit-content; */
+    /* width: 350px; */
+}
+
+/* mat-form-field {
+    width: 100%;
+} */
+
+section{
     height: 120vh;
-    background-color: #D9D9D9;
 }
 
-div {
-    width: 100%;
-    max-width: 500px;
-    padding: 20px;
-    position: relative;
-}
-
-
-.back-button {
-    /* border: 1px solid black; */
-    /* display: grid; */
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    
-}
-
-h3 {
-    /* border: 1px solid black; */
-    text-align: center;
-    margin-bottom: 10%;
-    display: flex;
-    /* color: #00427B;
-    font-size: 50px;
-    border: 1px black solid; 
-    width: fit-content;
-    margin-bottom: 150%;
-    padding-top: 10px; */
-}
-
-mat-card {
-    padding: 20px;
-}
-
-mat-form-field {
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.button-container {
+.button-container{
+    border: 1px solid black;
     text-align: center;
     justify-content: center;
-    /* border: 1px solid black; */
     width: fit-content;
-    width: 90%;
-}
-
-button {
     width: 100%;
 }
-.button-container button{
-    background-color: #00427B;
-    transition: background-color 0.3s ease;
-}
 
-.button-container button:hover{
-    background-color: #00254A;
-}
+
+
+
+
