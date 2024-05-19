@@ -2,17 +2,27 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 )
 
 type Session struct {
 	Permissions int
 }
+
+const (
+	PerRegistered = 0
+	PerRejected   = 1
+	PerAccepted   = 2
+	PerCust	      = 4
+	PerProduct    = 8
+	PerSale	      = 16
+	PerAll	      = 32
+)
 
 var cookies = true
 
@@ -48,37 +58,61 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("OPTIONS /api/user/{id}", corsHandler)
-	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", corsHandler)
-	http.HandleFunc("OPTIONS /api/user/register", corsHandler)
-	http.HandleFunc("OPTIONS /api/user/login", corsHandler)
-	http.HandleFunc("OPTIONS /api/user/logout", corsHandler)
-	http.HandleFunc("OPTIONS /api/user/setUserPermission", corsHandler)
-	http.HandleFunc("OPTIONS /api/user/selectAllAllowed", corsHandler)
-	http.HandleFunc("OPTIONS /api/user/selectAllAllowedWithoutPermission", corsHandler)
+	http.HandleFunc("OPTIONS /api/user/{id}", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/login", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/logout", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/register", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/selectAllAllowed", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/selectAllAllowedWithoutPermission", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/setUserPermission", cors(nil))
 
-	http.HandleFunc("GET /api/user/{id}", setCors(getUserById))
-	http.HandleFunc("GET /api/user/selectUnregisteredUsers", setCors(selectUnregisteredUsers))
-	http.HandleFunc("POST /api/user/register", setCors(registerUser))
-	http.HandleFunc("POST /api/user/login", setCors(loginUser))
-	http.HandleFunc("POST /api/user/logout", setCors(logOutUser))
-	http.HandleFunc("POST /api/user/setUserPermission", setCors(setUserPermission))
-	http.HandleFunc("GET /api/user/selectAllAllowed", setCors(selectAllAllowed))
-	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", setCors(selectAllAllowedWithoutPermission))
-	fmt.Println("Listening...")
+	http.HandleFunc("GET /api/user/{id}", cors(getUserById))
+	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))
+	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", cors(selectAllAllowedWithoutPermission))
+	http.HandleFunc("GET /api/user/selectUnregisteredUsers", cors(selectUnregisteredUsers))
+
+	/* http.HandleFunc("POST /api/user/login", cors(auth(login, PerCust | PerProduct | PerSale | PerAll))) */
+	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, PerCust | PerProduct | PerSale | PerAll))) */
+	http.HandleFunc("POST /api/user/login", cors(login))
+	http.HandleFunc("POST /api/user/logout", cors(logout))
+	http.HandleFunc("POST /api/user/register", cors(registerUser))
+	http.HandleFunc("POST /api/user/setUserPermission", cors(setUserPermission))
+	log.Println("Listening...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func corsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("info: %s %s\n", r.Method, r.URL.Path)
-	setCorsHeaders(w, r)
-	w.WriteHeader(http.StatusNoContent)
+func auth(f http.HandlerFunc, permissions int) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("session")
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		err = uuid.Validate(cookie.Value)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		session := sessions[cookie.Value]
+		if (session.Permissions & permissions) > 0 {
+			f.ServeHTTP(w, r)
+		} else {
+			w.WriteHeader(http.StatusForbidden)
+		}
+	}
 }
 
-func setCors(f http.HandlerFunc) http.HandlerFunc {
+func cors(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		setCorsHeaders(w, r)
-		f.ServeHTTP(w, r)
+		if f != nil {
+			f.ServeHTTP(w, r)
+		} else {
+			w.WriteHeader(http.StatusNoContent)
+		}
 	}
 }
 

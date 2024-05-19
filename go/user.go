@@ -228,7 +228,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
+	if result.Permissions == PerRegistered || result.Permissions == PerRejected ||
+	   result.Permissions == PerAccepted {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 	u := uuid.NewString()
 	sessions[u] = Session{result.Permissions}
 	cookie := http.Cookie{
