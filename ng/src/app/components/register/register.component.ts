@@ -85,6 +85,9 @@ export class RegisterComponent {
 			text: "Bem vindo ao XLRM!",
 			icon: "success"
 		  });
+		  setTimeout(() => {
+			this.router.navigate(['/login']);
+		  }, 3000); 
 	    },
 	    err => {
 		console.log("FAIL!");

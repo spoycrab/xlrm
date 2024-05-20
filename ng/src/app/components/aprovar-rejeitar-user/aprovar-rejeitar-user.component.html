@@ -1,5 +1,5 @@
 <section>
-  <p>Aprovar-Rejeitar Usuarios</p>
+  <h3>XLRM - Aprovar-Rejeitar Usuarios</h3>
 
   <!-- Verificar se há usuários -->
   <button mat-icon-button class="back-button" (click)="goToTelaInicio()">
@@ -20,7 +20,7 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef> Ação </th>
         <td mat-cell *matCellDef="let usuario">
-          <button mat-button (click)="acaoUsuario(usuario)">Ação</button>
+          <button mat-button (click)="acaoUsuario(usuario)">Aprovar/Rejeitar</button>
         </td>
       </ng-container>
 

@@ -2,7 +2,7 @@
   <mat-icon>arrow_back</mat-icon>
 </button>
 <h3>XLRM</h3>
-<h4>Cadastro de Produto</h4>
+<h4>Cadastro de Cliente</h4>
 <div style="max-width: 600px; margin: 0 auto; padding: 1em;">
     <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="fill" style="width: 100%;">
@@ -31,7 +31,7 @@
       </mat-form-field>
   
       <mat-form-field appearance="fill" style="width: 100%;">
-        <mat-label>Tipo</mat-label>
+        <mat-label>Tipo de Documento</mat-label>
         <mat-select formControlName="type" required>
           <mat-option value="1">CNPJ</mat-option>
           <mat-option value="2">CPF</mat-option>

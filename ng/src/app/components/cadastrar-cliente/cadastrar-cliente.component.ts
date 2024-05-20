@@ -67,10 +67,13 @@ export class CadastrarClienteComponent {
       console.log("OK!");
       Swal.fire({
         title: "Cadastro feito com sucesso!",
-        text: "Bem vindo ao XLRM!",
+        text: "Cliente Cadastrado!",
         icon: "success"
         });
-        },
+        setTimeout(() => {
+          this.router.navigate(['/telaInicio']);
+        }, 3000); // redireciona para tela de Inicio depois de 3 segundos;  
+      },
         err => {
       console.log("FAIL!");
       /* 'err.message' is a user-friendly message... */
@@ -82,7 +85,7 @@ export class CadastrarClienteComponent {
         });
         }
     );
-    /* this.userForm.reset(); */
+
       }
       goToTelaInicio(): void {
         this.router.navigate(['/telaInicio']);

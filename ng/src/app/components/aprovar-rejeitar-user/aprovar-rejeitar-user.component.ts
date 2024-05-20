@@ -34,7 +34,7 @@ ngOnInit(): void {
       } else if (response != null) {
         this.usuarios = [response];
       }
-      console.log(this.usuarios); // Certifique-se de que a variável usuarios seja uma matriz
+    //  console.log(this.usuarios); // Certifique-se de que a variável usuarios seja uma matriz
     },
     (error) => {
       console.error("Erro ao obter usuários não registrados 2:", error);

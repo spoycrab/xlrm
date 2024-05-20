@@ -77,8 +77,8 @@ this.productService.registerProduct(product).subscribe(
     res => {
   console.log("OK!");
   Swal.fire({
-    title: "Produto cadastrado com sucesso!",
-    text: "teste",
+    title: "Cadastrado feito com sucesso!",
+    text: "Produto cadastrado!",
     icon: "success"
     });
     setTimeout(() => {
