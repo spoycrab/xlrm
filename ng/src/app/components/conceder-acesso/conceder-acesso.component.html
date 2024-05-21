@@ -5,8 +5,8 @@
   <button mat-icon-button class="back-button" (click)="goToTelaInicio()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <ng-container *ngIf="usuarios.length > 0; else noUsuarios">
-    <table mat-table [dataSource]="usuarios" class="mat-elevation-z8">
+  <ng-container *ngIf="users.length > 0; else noUsers">
+    <table mat-table [dataSource]="users" class="mat-elevation-z8">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Nome </th>
         <td mat-cell *matCellDef="let usuario"> {{ usuario.name }} </td>
@@ -19,8 +19,8 @@
 
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef> Ação </th>
-        <td mat-cell *matCellDef="let usuario">
-          <button mat-button (click)="concederAcesso(usuario)">Conceder Acesso</button>
+        <td mat-cell *matCellDef="let user">
+          <button mat-button (click)="grantAccess(user)">Conceder Acesso</button>
         </td>
       </ng-container>
 
@@ -30,7 +30,7 @@
   </ng-container>
 
   <!-- Mensagem exibida quando não há usuários -->
-  <ng-template #noUsuarios>
+  <ng-template #noUsers>
     <p>Não há usuários.</p>
   </ng-template>
 </section>
