@@ -55,7 +55,8 @@ export class RegisterComponent {
     ngOnInit(): void {
 	this.userForm = new FormGroup({
 	    email: new FormControl("", [
-		Validators.required
+		Validators.required,
+		Validators.email
 	    ]),
 	    pass1: new FormControl("", [
 		Validators.required,

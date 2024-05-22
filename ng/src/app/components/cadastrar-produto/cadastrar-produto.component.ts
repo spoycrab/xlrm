@@ -25,6 +25,10 @@ export class CadastrarProdutoComponent {
 
   constructor(private productService: ProductService, private router: Router) { }
 
+  get codeSKU() {
+    return this.productForm.get("codeSKU");
+  }
+
   get productName() {
 return this.productForm.get("productName");
   }
@@ -47,12 +51,13 @@ return this.productForm.get("priceTag");
 
   ngOnInit(): void {
 this.productForm = new FormGroup({
+  codeSKU: new FormControl("", [
+    Validators.required
+      ]),
   productName: new FormControl("", [
   Validators.required
     ]),
     description: new FormControl("", [
-  Validators.required,
-  Validators.minLength(8)
     ]),
     quantity: new FormControl("", [
   Validators.required,
@@ -66,11 +71,13 @@ this.productForm = new FormGroup({
   onSubmit(): void {
 let product = new Product();
 
+product.code = Number(this.productForm.get("codeSKU")!.value);
 product.name = String(this.productForm.get("productName")!.value);
 product.description = String(this.productForm.get("description")!.value);
 product.quantity = Number(this.productForm.get("quantity")!.value);
 product.manufacturer = String(this.productForm.get("factory")!.value);
 product.price = Number(this.productForm.get("priceTag")!.value);
+
 
 console.log(product);
 this.productService.registerProduct(product).subscribe(

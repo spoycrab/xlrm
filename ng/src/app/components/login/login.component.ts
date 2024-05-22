@@ -43,7 +43,8 @@ export class LoginComponent {
       ngOnInit(): void {
         this.loginForm = new FormGroup({
           email: new FormControl("", [
-            Validators.required
+            Validators.required,
+            Validators.email
               ]),
               pass1: new FormControl("", [
             Validators.required,

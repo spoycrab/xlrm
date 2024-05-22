@@ -17,7 +17,7 @@
   
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Documento</mat-label>
-        <input matInput formControlName="document" required>
+        <input matInput formControlName="document" type="number" required>
       </mat-form-field>
   
       <mat-form-field appearance="fill" style="width: 100%;">
@@ -27,7 +27,7 @@
   
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Telefone</mat-label>
-        <input matInput formControlName="phoneNumber" type="tel" required>
+        <input matInput formControlName="phoneNumber" type="number" required>
       </mat-form-field>
   
       <mat-form-field appearance="fill" style="width: 100%;">
@@ -40,7 +40,7 @@
   
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Endereço</mat-label>
-        <input matInput formControlName="streetAdress" required>
+        <input matInput formControlName="streetAdress">
       </mat-form-field>
   
       <mat-form-field appearance="fill" style="width: 100%;">
@@ -55,7 +55,7 @@
   
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>CEP</mat-label>
-        <input matInput formControlName="zipCode" required>
+        <input matInput formControlName="zipCode" type="number" required>
       </mat-form-field>
   
       <mat-form-field appearance="fill" style="width: 100%;">
@@ -63,7 +63,7 @@
         <input matInput formControlName="country" required>
       </mat-form-field>
   
-      <button mat-raised-button color="primary" type="submit">Enviar</button>
+      <button mat-raised-button color="primary" type="submit"  [disabled]="!customerForm.valid">Enviar</button>
     </form>
   </div>
   

@@ -18,10 +18,10 @@ const (
 	PerRegistered = 0
 	PerRejected   = 1
 	PerAccepted   = 2
-	PerCust	      = 4
+	PerCust       = 4
 	PerProduct    = 8
-	PerSale	      = 16
-	PerAll	      = 32
+	PerSale       = 16
+	PerAll        = 32
 )
 
 var cookies = true
@@ -131,7 +131,9 @@ func cors(f http.HandlerFunc) http.HandlerFunc {
 }
 
 func setCorsHeaders(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
+
 }

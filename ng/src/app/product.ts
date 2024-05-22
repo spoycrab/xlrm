@@ -4,6 +4,7 @@ export class Product {
     description?: string;
     quantity: number;
     price: number;
+    code: number
     
 
     constructor() { }
