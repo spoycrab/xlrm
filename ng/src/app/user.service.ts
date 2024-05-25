@@ -70,4 +70,12 @@ export class UserService {
                   catchError(this.errorHandler)
                 );
               }
-}
+
+              logout(): Observable<void> {
+                return this.http.post<void>(URL + "/logout", {}, {
+                    withCredentials: true
+                }).pipe(
+                    catchError(this.errorHandler)
+                );
+            }
+        }
