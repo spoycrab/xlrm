@@ -43,7 +43,8 @@ export class LoginComponent {
       ngOnInit(): void {
         this.loginForm = new FormGroup({
           email: new FormControl("", [
-            Validators.required
+            Validators.required,
+            Validators.email
               ]),
               pass1: new FormControl("", [
             Validators.required,
@@ -66,32 +67,36 @@ export class LoginComponent {
           const cookie = response.headers.get('Set-Cookie');
           localStorage.setItem('sessionCookie', cookie);
           
+          Swal.fire({
+            title: "Login feito com sucesso!",
+            text: "Bem vindo ao XLRM!",
+            icon: "success"
+          });
+    
+          // Redirecionar após um pequeno atraso
+          setTimeout(() => {
+            this.router.navigate(['/telaInicio']);
+          }, 3000);
+        
           // Lidar com outras ações após o login, como redirecionar para outra página
         },
         (error) => {
           console.error("Erro ao fazer login:", error);
           // Lidar com o erro, por exemplo, exibir uma mensagem de erro para o usuário
+        
+          Swal.fire({
+            title: "Falha no Login!",
+            text: "Login ou senha incorretos!",
+            icon: "error"
+          });
+          
         }
       );
 
       // Simular a validação bem-sucedida para redirecionamento
-      Swal.fire({
-        title: "Login feito com sucesso!",
-        text: "Bem vindo ao XLRM!",
-        icon: "success"
-      });
+    
 
-      // Redirecionar após um pequeno atraso
-      setTimeout(() => {
-        this.router.navigate(['/telaInicio']);
-      }, 3000);
-    } else {
 
-      Swal.fire({
-        title: "Falha no Login!",
-        text: "Login ou senha incorretos!",
-        icon: "error"
-      });
       // Se o formulário não for válido, você pode adicionar lógica adicional aqui, se necessário
     }
   }

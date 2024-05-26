@@ -6,6 +6,15 @@
         <img src="assets/Vector-removebg-preview.png" id="iconeVoltar">
       </a>
       <div id="fields">
+        
+        <mat-form-field>
+          <mat-label>Código SKU:</mat-label>
+          <input matInput id="codeSKU" type="number" formControlName="codeSKU" required>
+          <mat-error *ngIf="codeSKU!.invalid && (codeSKU!.dirty || codeSKU!.touched)">
+            Código SKU é obrigatório.
+          </mat-error>
+        </mat-form-field>
+        
         <mat-form-field>
           <mat-label>Nome do Produto:</mat-label>
           <input matInput id="productName" formControlName="productName" required>
@@ -18,10 +27,7 @@
 
         <mat-form-field>
           <mat-label>Descrição:</mat-label>
-          <input matInput id="description" formControlName="description" required>
-          <mat-error *ngIf="description!.invalid && (description!.dirty || description!.touched)">
-            Descrição é obrigatória.
-          </mat-error>
+          <input matInput id="description" formControlName="description">
         </mat-form-field>
 
         <br>
@@ -54,9 +60,7 @@
 
 
         <div id="button-container">
-            <button mat-button id="loginButton">
-            <p>Enviar</p>
-            </button>
+          <button mat-raised-button type="submit" id="loginButton" [disabled]="!productForm.valid">Enviar</button>
         </div>
       </div>
     </section>

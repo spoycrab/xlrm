@@ -1,9 +1,10 @@
 export class Product {
     name: string;
-    manufacturer: string;
+    manufacturer?: string;
     description?: string;
-    quantity: number;
-    price: number;
+    quantity?: number;
+    price?: number;
+    code: number
     
 
     constructor() { }

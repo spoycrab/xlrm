@@ -2,30 +2,29 @@
     <section>
         <div class="header">
             <h3>XLRM</h3>
-            <button mat-icon-button class="back-button" (click)="goToLogin()">
-                <mat-icon>arrow_back</mat-icon>
-              </button>
+            <button mat-button class="logout-button" (click)="logout($event)">Logout</button>
         </div>
 
         <div class="fields">
-
-            <button (click)="onNavigate()" class="actionButton" >
+            <button (click)="onNavigate()" class="actionButton">
                 Aprovar/Reprovar
             </button>
 
-            <button (click)="onNavigate2()" class="actionButton" >
+            <button (click)="onNavigate2()" class="actionButton">
                 Conceder acesso
             </button>
 
-            <button  (click)="onNavigate3()" class="actionButton" >
+            <button (click)="onNavigate3()" class="actionButton">
                 Cadastrar Produto
             </button>
 
-            <button  (click)="onNavigate4()" class="actionButton" >
+            <button (click)="onNavigate4()" class="actionButton">
                 Cadastrar Cliente
             </button>
 
-            
+            <button (click)="onNavigate5()" class="actionButton">
+                Visualizar Produto
+            </button>
         </div>
     </section>
 </form>

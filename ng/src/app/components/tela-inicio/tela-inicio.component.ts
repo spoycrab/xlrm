@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { UserService } from '../../user.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-tela-inicio',
@@ -15,7 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class TelaInicioComponent {
 
-  constructor(private router: Router){
+  constructor(private router: Router, private userService: UserService){
 
   }
 
@@ -38,5 +40,43 @@ export class TelaInicioComponent {
   onNavigate4(){
     this.router.navigate(['/cadastrarCliente']);
   }
+
+  onNavigate5(){
+    this.router.navigate(['/visualizarProduto']);
+  }
+
+  logout(event: Event): void {
+    event.preventDefault();  // Prevenir comportamento padrão do formulário
+
+    Swal.fire({
+      title: 'Você tem certeza?',
+      text: 'Você quer sair da sua conta?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sim, sair!',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userService.logout().subscribe(
+          () => {
+            // Sucesso: redirecionar para a página de login ou homepage
+            setTimeout(() => {this.router.navigate(['/login']);}, 3000);
+            Swal.fire(
+              'Desconectado!',
+              'Você saiu da sua conta.',
+              'success'
+            );
+          },
+          error => {
+            // Tratamento de erro, se necessário
+            console.error('Erro ao fazer logout:', error);
+          }
+        );
+      }
+    });
+  }
+
 
 }

@@ -39,7 +39,7 @@ export class CadastrarClienteComponent {
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', Validators.required],
       type: ['', Validators.required],
-      streetAdress: ['', Validators.required],
+      streetAdress: [''],
       city: ['', Validators.required],
       state: ['', Validators.required],
       zipCode: ['', Validators.required],
@@ -56,7 +56,7 @@ export class CadastrarClienteComponent {
     customer.email = String(this.customerForm.get("email")!.value);
     customer.phoneNumber = String(this.customerForm.get("phoneNumber")!.value);
     customer.type = String(this.customerForm.get("type")!.value);
-    customer.streetAdress = String(this.customerForm.get("streetAdress")!.value);
+    customer.streetAddress = String(this.customerForm.get("streetAdress")!.value);
     customer.city = String(this.customerForm.get("city")!.value);
     customer.state = String(this.customerForm.get("state")!.value);
     customer.zipCode = String(this.customerForm.get("zipCode")!.value);

@@ -63,10 +63,19 @@ export class UserService {
             );
             };
 
-    setUserPermission(data: { id: number, permissions: number }) {
-        return this.http.post(URL + "/setUserPermission", data).pipe(
-            catchError(this.errorHandler)
-        );
-    }
+            setUserPermission(data: { id: number, permissions: number }) {
+                return this.http.post(URL + "/setUserPermission", data, {
+                  withCredentials: true
+                }).pipe(
+                  catchError(this.errorHandler)
+                );
+              }
 
-}
+              logout(): Observable<void> {
+                return this.http.post<void>(URL + "/logout", {}, {
+                    withCredentials: true
+                }).pipe(
+                    catchError(this.errorHandler)
+                );
+            }
+        }
