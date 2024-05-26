@@ -58,9 +58,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("OPTIONS /api/customer/{id}", cors(nil))
-	http.HandleFunc("OPTIONS /api/customer/register", cors(nil))
-
 	http.HandleFunc("OPTIONS /api/user/{id}", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/login", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/logout", cors(nil))
@@ -69,20 +66,36 @@ func main() {
 	http.HandleFunc("OPTIONS /api/user/selectAllAllowedWithoutPermission", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/setUserPermission", cors(nil))
-
+	//Product
 	http.HandleFunc("OPTIONS /api/product/{id}", cors(nil))
 	http.HandleFunc("OPTIONS /api/product/register", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/getAllProducts", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/getProductsByDate", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/getProductsByQuery", cors(nil))
+
+	http.HandleFunc("GET /api/product/{id}", cors(getProductById))
+	http.HandleFunc("POST /api/product/register", cors(registerProduct))
+	http.HandleFunc("GET /api/product/getAllProducts", cors(getAllProducts))
+	http.HandleFunc("GET /api/product/getProductsByDate", cors(getProductsByDate)) //Exemplo de requisiçao por url: http://localhost:8080/api/product/getProductsByDate?startDate=2024-05-01&endDate=2024-08-31
+	http.HandleFunc("GET /api/product/getProductsByQuery", cors(getProductsByQuery))
+
+	//Customer
+	http.HandleFunc("OPTIONS /api/customer/{id}", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/getAllCustomers", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/getCustumerByDocument", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/register", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/getCustomersByName", cors(nil))
 
 	http.HandleFunc("GET /api/customer/{id}", cors(getCustomerById))
+	http.HandleFunc("GET /api/customer/getAllCustomers", cors(getAllCustomers))
+	http.HandleFunc("GET /api/customer/getCustumerByDocument", cors(getCustumerByDocument))
+	http.HandleFunc("POST /api/customer/register", cors(registerCustomer))
+	http.HandleFunc("GET /api/customer/getCustomersByName", cors(getCustomersByName))
 
 	http.HandleFunc("GET /api/user/{id}", cors(getUserById))
 	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))
 	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", cors(selectAllAllowedWithoutPermission))
 	http.HandleFunc("GET /api/user/selectUnregisteredUsers", cors(selectUnregisteredUsers))
-
-	http.HandleFunc("GET /api/product/{id}", cors(getProductById))
-
-	http.HandleFunc("POST /api/customer/register", cors(registerCustomer))
 
 	/* http.HandleFunc("POST /api/user/login", cors(auth(login, PerCust | PerProduct | PerSale | PerAll))) */
 	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, PerCust | PerProduct | PerSale | PerAll))) */
@@ -91,7 +104,6 @@ func main() {
 	http.HandleFunc("POST /api/user/register", cors(registerUser))
 	http.HandleFunc("POST /api/user/setUserPermission", cors(setUserPermission))
 
-	http.HandleFunc("POST /api/product/register", cors(registerProduct))
 	log.Println("Listening...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -135,5 +147,4 @@ func setCorsHeaders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
-
 }
