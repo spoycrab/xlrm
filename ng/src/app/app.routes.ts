@@ -7,6 +7,7 @@ import { AprovarRejeitarUserComponent } from './components/aprovar-rejeitar-user
 import { ConcederAcessoComponent } from './components/conceder-acesso/conceder-acesso.component';
 import { CadastrarProdutoComponent } from './components/cadastrar-produto/cadastrar-produto.component';
 import { CadastrarClienteComponent } from './components/cadastrar-cliente/cadastrar-cliente.component';
+import { VisualizarProdutoComponent } from './components/visualizar-produto/visualizar-produto.component';
 
 export const ROUTES: Routes = [
     {path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -26,5 +27,8 @@ export const ROUTES: Routes = [
     },
     {
     path: "cadastrarCliente", component: CadastrarClienteComponent
-}
+    },
+    {
+        path: "visualizarProduto", component: VisualizarProdutoComponent
+    }
 ];

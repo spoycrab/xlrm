@@ -41,6 +41,10 @@ export class TelaInicioComponent {
     this.router.navigate(['/cadastrarCliente']);
   }
 
+  onNavigate5(){
+    this.router.navigate(['/visualizarProduto']);
+  }
+
   logout(event: Event): void {
     event.preventDefault();  // Prevenir comportamento padrão do formulário
 
