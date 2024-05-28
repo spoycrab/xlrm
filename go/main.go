@@ -28,6 +28,7 @@ var cookies = true
 
 var db *sql.DB
 var sessions = make(map[string]Session)
+var fileHandler = http.FileServer(http.Dir("../ng/dist/ng/browser"))
 
 func main() {
 	for i := 1; i < len(os.Args); i++ {
@@ -103,25 +104,21 @@ func main() {
 	http.HandleFunc("POST /api/user/setUserPermission", cors(setUserPermission))
 
 	log.Println("Listening...")
+	http.HandleFunc("GET /login", staticHandler(false))
+	http.HandleFunc("GET /settings", staticHandler(true))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func auth(f http.HandlerFunc, permissions int) http.HandlerFunc {
+func auth(f http.HandlerFunc, per int) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("session")
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		err = uuid.Validate(cookie.Value)
+		cookie, err := getSession(r)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		session := sessions[cookie.Value]
-		if (session.Permissions & permissions) > 0 {
+		if (session.Permissions & per) > 0 {
 			f.ServeHTTP(w, r)
 		} else {
 			w.WriteHeader(http.StatusForbidden)
@@ -145,4 +142,48 @@ func setCorsHeaders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
+}
+
+/* func staticHandler(private bool, per int) http.HandlerFunc { */
+func staticHandler(private bool) http.HandlerFunc {
+	return func (w http.ResponseWriter, r *http.Request) {
+		/* if... */
+		r.URL.Path = r.URL.Path + "/"
+		if !private {
+			fileHandler.ServeHTTP(w, r)
+			return
+		}
+		cookie, err := getSession(r)
+		if err != nil {
+			redirect(w, r, "login")
+			return
+		}
+		_, exists := sessions[cookie.Value]
+		if !exists {
+			redirect(w, r, "login")
+			return
+		}
+		log.Println("Serving...")
+		fileHandler.ServeHTTP(w, r)
+	}
+}
+
+func getSession(r *http.Request) (*http.Cookie, error) {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return nil, err
+	}
+	err = uuid.Validate(cookie.Value)
+	if err != nil {
+		return nil, err
+	}
+	return cookie, nil
+}
+
+func redirect(w http.ResponseWriter, r *http.Request, newPath string) {
+	if q := r.URL.RawQuery; q != "" {
+		newPath += "?" + q
+	}
+	w.Header().Set("Location", newPath)
+	w.WriteHeader(http.StatusFound)
 }
