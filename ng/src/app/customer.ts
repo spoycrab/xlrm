@@ -4,7 +4,7 @@ export class Customer{
     document: string;
     email: string;
     phoneNumber: string;
-    type: string;
+    type: number;
     streetAddress?: string;
     city: string;
     state: string;

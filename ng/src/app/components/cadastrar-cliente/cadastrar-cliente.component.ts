@@ -49,13 +49,17 @@ export class CadastrarClienteComponent {
 
   onSubmit(): void {
     let customer = new Customer();
+
+    const customerTypeValue = this.customerForm.get("type")!.value;
+    const  customerTypeNumber = Number(customerTypeValue)
+
   
     customer.firstName = String(this.customerForm.get("firstName")!.value);
     customer.fullName = String(this.customerForm.get("fullName")!.value);
     customer.document = String(this.customerForm.get("document")!.value);
     customer.email = String(this.customerForm.get("email")!.value);
     customer.phoneNumber = String(this.customerForm.get("phoneNumber")!.value);
-    customer.type = String(this.customerForm.get("type")!.value);
+    customer.type = Number(customerTypeNumber);
     customer.streetAddress = String(this.customerForm.get("streetAdress")!.value);
     customer.city = String(this.customerForm.get("city")!.value);
     customer.state = String(this.customerForm.get("state")!.value);
@@ -76,6 +80,7 @@ export class CadastrarClienteComponent {
       },
         err => {
       console.log("FAIL!");
+      console.log(customer)
       /* 'err.message' is a user-friendly message... */
       console.log(err.message);
       Swal.fire({
