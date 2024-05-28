@@ -8,6 +8,7 @@ import { ProductService } from '../../product.service';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from "@angular/material/input";
 import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import '../../components/cadastrar-produto/cadastrar-produto.component.css';
 import { Router } from '@angular/router';
 
@@ -16,7 +17,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-cadastrar-produto',
   standalone: true,
-  imports: [CommonModule, NgIf, ReactiveFormsModule, MatInputModule, MatSelectModule, MatFormFieldModule],
+  imports: [CommonModule, NgIf, ReactiveFormsModule, MatInputModule, MatSelectModule, MatFormFieldModule, MatIconModule],
   templateUrl: './cadastrar-produto.component.html',
   styleUrl: './cadastrar-produto.component.css'
 })
@@ -106,5 +107,8 @@ this.productService.registerProduct(product).subscribe(
 /* this.productForm.reset(); */
   }
 
+  goToTelaInicio(): void {
+    this.router.navigate(['/telaInicio']);
+    }
 
 }
