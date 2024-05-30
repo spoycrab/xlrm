@@ -241,7 +241,7 @@ func getProductsByQuery(w http.ResponseWriter, r *http.Request) {
 	query := `
 			SELECT id, code, name, manufacturer, description, quantity, price, hidden, created, updated
 			FROM Product
-			WHERE 1=1
+			WHERE hidden = 0
 		`
 	args := []interface{}{}
 
