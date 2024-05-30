@@ -69,6 +69,9 @@ func main() {
 	http.HandleFunc("OPTIONS /api/product/getAllProducts", cors(nil))
 	http.HandleFunc("OPTIONS /api/product/getProductsByDate", cors(nil))
 	http.HandleFunc("OPTIONS /api/product/getProductsByQuery", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/updateProduct", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/updateProductQuantity", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/deleteProduct", cors(nil))
 
 	http.HandleFunc("OPTIONS /api/user/{id}", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/login", cors(nil))
@@ -90,6 +93,9 @@ func main() {
 	http.HandleFunc("GET /api/product/getProductsByDate", cors(getProductsByDate)) //Exemplo de requisiçao por url: http://localhost:8080/api/product/getProductsByDate?startDate=2024-05-01&endDate=2024-08-31
 	http.HandleFunc("GET /api/product/getProductsByQuery", cors(getProductsByQuery))
 	http.HandleFunc("POST /api/product/register", cors(registerProduct))
+	http.HandleFunc("POST /api/product/updateProduct", cors(updateProduct))
+	http.HandleFunc("POST /api/product/updateProductQuantity", cors(updateProductQuantity))
+	http.HandleFunc("POST /api/product/deleteProduct", cors(deleteProduct))
 
 	http.HandleFunc("GET /api/user/{id}", cors(getUserById))
 	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))
