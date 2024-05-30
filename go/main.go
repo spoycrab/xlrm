@@ -63,6 +63,8 @@ func main() {
 	http.HandleFunc("OPTIONS /api/customer/getCustumerByDocument", cors(nil))
 	http.HandleFunc("OPTIONS /api/customer/getCustomersByName", cors(nil))
 	http.HandleFunc("OPTIONS /api/customer/register", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/deleteCustomer", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/updateCustomer", cors(nil))
 
 	http.HandleFunc("OPTIONS /api/product/{id}", cors(nil))
 	http.HandleFunc("OPTIONS /api/product/register", cors(nil))
@@ -87,6 +89,8 @@ func main() {
 	http.HandleFunc("GET /api/customer/getCustumerByDocument", cors(getCustumerByDocument))
 	http.HandleFunc("GET /api/customer/getCustomersByName", cors(getCustomersByName))
 	http.HandleFunc("POST /api/customer/register", cors(registerCustomer))
+	http.HandleFunc("POST /api/customer/deleteCustomer", cors(deleteCustomer))
+	http.HandleFunc("POST /api/customer/updateCustomer", cors(updateCustomer))
 
 	http.HandleFunc("GET /api/product/{id}", cors(getProductById))
 	http.HandleFunc("GET /api/product/getAllProducts", cors(getAllProducts))

@@ -347,7 +347,19 @@ func getAllProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateProduct(w http.ResponseWriter, r *http.Request) {
-	var product Product
+
+	type ProductTemp struct {
+		Id           int64    `json:"id"`
+		Code         int32    `json:"code"`
+		Name         *string  `json:"name"`
+		Manufacturer *string  `json:"manufacturer"`
+		Description  *string  `json:"description"`
+		Quantity     *int32   `json:"quantity"`
+		Price        *float64 `json:"price"`
+		Hidden       *uint8   `json:"hidden"`
+	}
+
+	var product ProductTemp
 
 	err := json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
@@ -356,23 +368,41 @@ func updateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := validateProduct(product); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if _, err := selectProductByCode(int64(product.Code)); err != nil {
+	res, err := selectProductByCode(int64(product.Code))
+	if err != nil {
 		http.Error(w, "Product not found", http.StatusBadRequest)
 		return
 	}
+	query := "UPDATE Product SET "
+	params := []interface{}{}
+	if product.Name != nil {
+		query += "name = ?, "
+		params = append(params, *product.Name)
+	}
+	if product.Manufacturer != nil {
+		query += "manufacturer = ?, "
+		params = append(params, *product.Manufacturer)
+	}
+	if product.Description != nil {
+		query += "description = ?, "
+		params = append(params, *product.Description)
+	}
+	if product.Quantity != nil {
+		query += "quantity = ?, "
+		params = append(params, *product.Quantity)
+	}
+	if product.Price != nil {
+		query += "price = ?, "
+		params = append(params, *product.Price)
+	}
+	if product.Hidden != nil {
+		query += "hidden = ?, "
+		params = append(params, *product.Hidden)
+	}
+	query += "updated = NOW() WHERE id = ?"
+	params = append(params, res.Id)
 
-	query := `
-			UPDATE Product
-			SET name = ?, manufacturer = ?, description = ?, quantity = ?, price = ?, hidden = ?, updated = NOW()
-			WHERE code = ?
-		`
-
-	_, err = db.Exec(query, product.Name, product.Manufacturer, product.Description, product.Quantity, product.Price, product.Hidden, product.Code)
+	_, err = db.Exec(query, params...)
 	if err != nil {
 		http.Error(w, "Failed to update product", http.StatusInternalServerError)
 		log.Println("Error updating product:", err)
@@ -380,7 +410,8 @@ func updateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "Product updated successfully")
+	fmt.Fprint(w, "Product updated successfully")
+
 }
 
 func updateProductQuantity(w http.ResponseWriter, r *http.Request) {
