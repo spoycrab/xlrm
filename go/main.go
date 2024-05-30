@@ -10,24 +10,24 @@ import (
 	"github.com/google/uuid"
 )
 
-type Session struct {
-	Permissions int
+type session struct {
+	permissions int
 }
 
 const (
-	PerRegistered = 0
-	PerRejected   = 1
-	PerAccepted   = 2
-	PerCust       = 4
-	PerProduct    = 8
-	PerSale       = 16
-	PerAll        = 32
+	perRegistered = 1 << iota
+	perRejected
+	perAccepted
+	perCust
+	perProduct
+	perSale
+	perAll = perCust | perProduct | perSale
 )
 
 var cookies = true
 
 var db *sql.DB
-var sessions = make(map[string]Session)
+var sessions = make(map[string]session)
 var fileHandler = http.FileServer(http.Dir("../ng/dist/ng/browser"))
 
 func main() {
@@ -96,8 +96,8 @@ func main() {
 	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))
 	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", cors(selectAllAllowedWithoutPermission))
 	http.HandleFunc("GET /api/user/selectUnregisteredUsers", cors(selectUnregisteredUsers))
-	/* http.HandleFunc("POST /api/user/login", cors(auth(login, PerCust | PerProduct | PerSale | PerAll))) */
-	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, PerCust | PerProduct | PerSale | PerAll))) */
+	/* http.HandleFunc("POST /api/user/login", cors(auth(login, perCust | perProduct | perSale | perAll))) */
+	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, perCust | perProduct | perSale | perAll))) */
 	http.HandleFunc("POST /api/user/login", cors(login))
 	http.HandleFunc("POST /api/user/logout", cors(logout))
 	http.HandleFunc("POST /api/user/register", cors(registerUser))
@@ -118,7 +118,7 @@ func auth(f http.HandlerFunc, per int) http.HandlerFunc {
 			return
 		}
 		session := sessions[cookie.Value]
-		if (session.Permissions & per) > 0 {
+		if (session.permissions & per) > 0 {
 			f.ServeHTTP(w, r)
 		} else {
 			w.WriteHeader(http.StatusForbidden)

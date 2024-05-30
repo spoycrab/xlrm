@@ -64,7 +64,7 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user.Id = 0
-	user.Permissions = 0
+	user.Permissions = 1
 
 	if len(user.Pass) == 0 {
 		log.Println("'len(user.Pass) == 0'")
@@ -228,13 +228,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	if result.Permissions == PerRegistered || result.Permissions == PerRejected ||
-	   result.Permissions == PerAccepted {
+	if result.Permissions == perRegistered || result.Permissions == perRejected ||
+	   result.Permissions == perAccepted {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 	u := uuid.NewString()
-	sessions[u] = Session{result.Permissions}
+	sessions[u] = session{result.Permissions}
 	cookie := http.Cookie{
 		Name:   "session",
 		Value:  u,
@@ -266,7 +266,7 @@ func logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func selectUnregisteredUsers(w http.ResponseWriter, r *http.Request) {
-	row, err := db.Query("SELECT * FROM user WHERE permissions = 0;")
+	row, err := db.Query("SELECT * FROM user WHERE permissions = ?;", perRegistered)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -305,15 +305,14 @@ func setUserPermission(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if cookies {
-		cookie, err := r.Cookie("session")
+		cookie, err := getSession(r)
 		if err != nil {
+			log.Println(err)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-
-		// TODO
 		session := sessions[cookie.Value]
-		if session.Permissions < 3 {
+		if (session.permissions & perAll) == 0 {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
@@ -352,7 +351,7 @@ func setUserPermission(w http.ResponseWriter, r *http.Request) {
 }
 
 func selectAllAllowed(w http.ResponseWriter, r *http.Request) {
-	row, err := db.Query("SELECT * FROM user WHERE permissions != 0 AND permissions != 1;")
+	row, err := db.Query("SELECT * FROM user WHERE permissions != ? AND permissions != ?;", perRegistered, perRejected)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -388,7 +387,7 @@ func selectAllAllowed(w http.ResponseWriter, r *http.Request) {
 }
 
 func selectAllAllowedWithoutPermission(w http.ResponseWriter, r *http.Request) {
-	row, err := db.Query("SELECT * FROM user WHERE permissions = 2;")
+	row, err := db.Query("SELECT * FROM user WHERE permissions = ?;", perAccepted)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

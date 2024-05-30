@@ -6,7 +6,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
-import { User } from '../../user';
+import { User, UserPermissions } from '../../user';
 import { UserService } from '../../user.service';
 
 @Component({
@@ -57,22 +57,22 @@ export class ConcederAcessoComponent {
             confirmButtonText: 'Confirmar',
             cancelButtonText: 'Cancelar',
             preConfirm: () => {
-                let permissions = 0;
+                if ((<HTMLInputElement>document.getElementById("all")).checked) {
+		    return UserPermissions.ALL;
+                }
+
+                let value = 0;
 
                 if ((<HTMLInputElement>document.getElementById("cust")).checked) {
-                    permissions |= 4;
+                    value |= UserPermissions.CUST;
                 }
                 if ((<HTMLInputElement>document.getElementById("product")).checked) {
-                    permissions |= 8;
+                    value |= UserPermissions.PRODUCT;
                 }
                 if ((<HTMLInputElement>document.getElementById("sale")).checked) {
-                    permissions |= 16;
+                    value |= UserPermissions.SALE;
                 }
-                if ((<HTMLInputElement>document.getElementById("all")).checked) {
-                    permissions |= 32;
-                }
-
-                return permissions;
+                return value;
             }
         }).then((result) => {
             if (result.isConfirmed) {
