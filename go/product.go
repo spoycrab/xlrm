@@ -304,7 +304,7 @@ func getProductsByQuery(w http.ResponseWriter, r *http.Request) {
 func getAllProducts(w http.ResponseWriter, r *http.Request) {
 	query := `
 			SELECT id, code, name, manufacturer, description, quantity, price, hidden, created, updated
-			FROM Product
+			FROM Product WHERE hidden = 0
 		`
 
 	// Realizar a consulta no banco de dados

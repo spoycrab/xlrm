@@ -293,7 +293,7 @@ func getCustomersByName(w http.ResponseWriter, r *http.Request) {
 func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 	query := `
 			SELECT id, firstName, fullName, document, email, phoneNumber, type, streetAddress, city, state, zipCode, country, hidden, created, updated
-			FROM customer
+			FROM customer WHERE hidden = 0
 		`
 
 	// Realizar a consulta no banco de dados
