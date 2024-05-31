@@ -1,0 +1,11 @@
+section {
+    padding: 20px;
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  .mat-elevation-z8 {
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  }

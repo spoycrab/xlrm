@@ -78,6 +78,7 @@ func main() {
 	http.HandleFunc("OPTIONS /api/user/selectAllAllowedWithoutPermission", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/setUserPermission", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/getAllRejected", cors(nil))
 
 	http.HandleFunc("GET /api/customer/{id}", cors(getCustomerById))
 	http.HandleFunc("GET /api/customer/getAllCustomers", cors(getAllCustomers))
@@ -101,6 +102,8 @@ func main() {
 	http.HandleFunc("POST /api/user/logout", cors(logout))
 	http.HandleFunc("POST /api/user/register", cors(registerUser))
 	http.HandleFunc("POST /api/user/setUserPermission", cors(setUserPermission))
+
+	http.HandleFunc("GET /api/user/getAllRejected", cors(selectRejected))
 
 	log.Println("Listening...")
 	log.Fatal(http.ListenAndServe(":8080", nil))

@@ -8,6 +8,7 @@ import { ConcederAcessoComponent } from './components/conceder-acesso/conceder-a
 import { CadastrarProdutoComponent } from './components/cadastrar-produto/cadastrar-produto.component';
 import { CadastrarClienteComponent } from './components/cadastrar-cliente/cadastrar-cliente.component';
 import { VisualizarProdutoComponent } from './components/visualizar-produto/visualizar-produto.component';
+import { RevogarAcessoComponent } from './components/revogar-acesso/reavaliar-acesso.component';
 
 export const ROUTES: Routes = [
     {path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -30,5 +31,8 @@ export const ROUTES: Routes = [
     },
     {
         path: "visualizarProduto", component: VisualizarProdutoComponent
+    },
+    {
+        path: "reavaliarUsuario", component: RevogarAcessoComponent
     }
 ];
