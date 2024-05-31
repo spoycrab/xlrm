@@ -28,7 +28,8 @@ var cookies = true
 
 var db *sql.DB
 var sessions = make(map[string]session)
-var fileHandler = http.FileServer(http.Dir("../ng/dist/ng/browser"))
+var dir = "../ng/dist/ng/browser"
+var fileHandler http.Handler
 
 func main() {
 	for i := 1; i < len(os.Args); i++ {
@@ -38,6 +39,8 @@ func main() {
 		default:
 		}
 	}
+
+	log.SetFlags(0)
 
 	config := mysql.Config{
 		User:   os.Getenv("DBUSER"),
@@ -103,9 +106,17 @@ func main() {
 	http.HandleFunc("POST /api/user/register", cors(registerUser))
 	http.HandleFunc("POST /api/user/setUserPermission", cors(setUserPermission))
 
+	fileHandler = http.FileServer(http.Dir(dir))
+	http.HandleFunc("GET /", staticHandler(false, false, -1))
+	http.HandleFunc("GET /cadastrarCliente", staticHandler(true, true, -1))
+	http.HandleFunc("GET /cadastrarProduto", staticHandler(true, true, -1))
+	http.HandleFunc("GET /concederAcesso", staticHandler(true, true, -1))
+	http.HandleFunc("GET /estadoUsuario", staticHandler(true, true, -1))
+	http.HandleFunc("GET /login", staticHandler(true, false, -1))
+	http.HandleFunc("GET /register", staticHandler(true, false, -1))
+	http.HandleFunc("GET /telaInicio", staticHandler(true, true, -1))
+	http.HandleFunc("GET /visualizarProduto", staticHandler(true, true, -1))
 	log.Println("Listening...")
-	http.HandleFunc("GET /login", staticHandler(false))
-	http.HandleFunc("GET /settings", staticHandler(true))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
@@ -144,27 +155,35 @@ func setCorsHeaders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
 }
 
-/* func staticHandler(private bool, per int) http.HandlerFunc { */
-func staticHandler(private bool) http.HandlerFunc {
+func staticHandler(isdir bool, private bool, per int) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
-		/* if... */
-		r.URL.Path = r.URL.Path + "/"
+		log.SetPrefix("staticHandler: ")
+		if isdir {
+			r.URL.Path = r.URL.Path + "/"
+		}
 		if !private {
+			log.Printf("Serving %s\n", r.URL.Path)
 			fileHandler.ServeHTTP(w, r)
 			return
 		}
 		cookie, err := getSession(r)
 		if err != nil {
+			log.Println(err)
+			log.Println("Redirecting to /login")
 			redirect(w, r, "login")
 			return
 		}
 		_, exists := sessions[cookie.Value]
+		log.Println(exists)
 		if !exists {
+			log.Printf("'%s' is not a valid session!\n", cookie.Value)
+			log.Println("Redirecting to /login")
 			redirect(w, r, "login")
 			return
 		}
-		log.Println("Serving...")
+		log.Printf("Serving %s\n", r.URL.Path)
 		fileHandler.ServeHTTP(w, r)
+		log.SetPrefix("")
 	}
 }
 
