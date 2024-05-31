@@ -1,69 +1,74 @@
-<button mat-icon-button class="back-button" (click)="goToTelaInicio()">
-  <mat-icon>arrow_back</mat-icon>
-</button>
-<h3>XLRM</h3>
-<h4>Cadastro de Cliente</h4>
-<div style="max-width: 600px; margin: 0 auto; padding: 1em;">
-    <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
+<section>
+  <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
+    <h3>XLRM</h3>
+    <h4>Cadastro de Cliente</h4>
+    <button mat-icon-button class="back-button" (click)="goToTelaInicio()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div style="max-width: 600px; padding: 1em;">
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Primeiro nome</mat-label>
         <input matInput formControlName="firstName" required>
       </mat-form-field>
-  
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Sobrenome</mat-label>
         <input matInput formControlName="fullName" required>
       </mat-form-field>
-  
+
+      <mat-form-field appearance="fill" style="width: 100%;">
+        <mat-label>Tipo de Documento</mat-label>
+          <mat-select formControlName="type" required>
+            <mat-option value="1">CNPJ</mat-option>
+            <mat-option value="2">CPF</mat-option>
+          </mat-select>
+      </mat-form-field>
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Documento</mat-label>
         <input matInput formControlName="document" type="number" required>
       </mat-form-field>
-  
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" type="email" required>
       </mat-form-field>
-  
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Telefone</mat-label>
         <input matInput formControlName="phoneNumber" type="number" required>
       </mat-form-field>
-  
-      <mat-form-field appearance="fill" style="width: 100%;">
-        <mat-label>Tipo de Documento</mat-label>
-        <mat-select formControlName="type" required>
-          <mat-option value="1">CNPJ</mat-option>
-          <mat-option value="2">CPF</mat-option>
-        </mat-select>
-      </mat-form-field>
-  
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Endereço</mat-label>
         <input matInput formControlName="streetAdress">
       </mat-form-field>
-  
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Cidade</mat-label>
         <input matInput formControlName="city" required>
       </mat-form-field>
-  
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>Estado</mat-label>
         <input matInput formControlName="state" required>
       </mat-form-field>
-  
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>CEP</mat-label>
         <input matInput formControlName="zipCode" type="number" required>
       </mat-form-field>
-  
+
       <mat-form-field appearance="fill" style="width: 100%;">
         <mat-label>País</mat-label>
         <input matInput formControlName="country" required>
       </mat-form-field>
-  
+
       <button mat-raised-button color="primary" type="submit"  [disabled]="!customerForm.valid">Enviar</button>
-    </form>
-  </div>
+
+    </div>
+  </form>
+</section>
   
+<!-- style="max-width: 600px; margin: 0 auto; padding: 1em;" -->
