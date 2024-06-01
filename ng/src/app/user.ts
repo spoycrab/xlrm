@@ -16,5 +16,5 @@ export enum UserPermissions {
     CUST       = 1 << 3,
     PRODUCT    = 1 << 4,
     SALE       = 1 << 5,
-    ALL        = CUST | PRODUCT | SALE,
+    ADMIN      = 1 << 6,
 }

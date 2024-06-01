@@ -21,7 +21,7 @@ const (
 	perCust
 	perProduct
 	perSale
-	perAll = perCust | perProduct | perSale
+	perAdmin
 )
 
 var cookies = true

@@ -303,26 +303,17 @@ func selectUnregisteredUsers(w http.ResponseWriter, r *http.Request) {
 
 func setUserPermission(w http.ResponseWriter, r *http.Request) {
 	var err error
-
-	if cookies {
-		cookie, err := getSession(r)
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		session := sessions[cookie.Value]
-		if (session.permissions & perAll) == 0 {
-			w.WriteHeader(http.StatusForbidden)
-			return
-		}
-	}
-
 	var user User
 
 	err = json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if user.Permissions == 0 {
+		/* user.Permissions = perAccepted */
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 

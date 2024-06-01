@@ -50,17 +50,13 @@ export class ConcederAcessoComponent {
 <label for="product">Produto</label><br>
 <input type="checkbox" id="sale">
 <label for="sale">Vendas</label><br>
-<input type="checkbox" id="all">
-<label for="all">Administradbor</label><br>
+<input type="checkbox" id="admin">
+<label for="admin">Administradbor</label><br>
 `,
             showCancelButton: true,
             confirmButtonText: 'Confirmar',
             cancelButtonText: 'Cancelar',
             preConfirm: () => {
-                if ((<HTMLInputElement>document.getElementById("all")).checked) {
-		    return UserPermissions.ALL;
-                }
-
                 let value = 0;
 
                 if ((<HTMLInputElement>document.getElementById("cust")).checked) {
@@ -72,14 +68,17 @@ export class ConcederAcessoComponent {
                 if ((<HTMLInputElement>document.getElementById("sale")).checked) {
                     value |= UserPermissions.SALE;
                 }
+                if ((<HTMLInputElement>document.getElementById("admin")).checked) {
+                    value |= UserPermissions.ADMIN;
+                }
                 return value;
             }
         }).then((result) => {
             if (result.isConfirmed) {
                 let permissions = parseInt(result.value);
 
-                if (isNaN(permissions)) {
-                    permissions = 0;
+                if (isNaN(permissions) || permissions == 0) {
+                    return;
                 }
 
                 let data = {id, permissions}
@@ -88,10 +87,10 @@ export class ConcederAcessoComponent {
                     () => {
                         Swal.fire({
                             title: "Sucesso!",
-                            text: "As permissões foram alteradas com sucesso",
+                            text: "As permissões foram alteradas com sucesso.",
                             icon: "success"
                         }).then(() => {
-                            location.reload(); // Recarregar a página após exibir a mensagem de sucesso
+                            location.reload();
                         });
                     },
                     (error) => {
@@ -100,7 +99,7 @@ export class ConcederAcessoComponent {
                             text: "Ocorreu um erro, por favor tente novamente!",
                             icon: "error"
                         }).then(() => {
-                            location.reload(); // Recarregar a página após exibir a mensagem de sucesso
+                            location.reload();
                         });
                     }
                 );
@@ -109,6 +108,6 @@ export class ConcederAcessoComponent {
     }
 
     goToTelaInicio(): void {
-	this.router.navigate(['/telaInicio']);
+        this.router.navigate(['/telaInicio']);
     }
 }
