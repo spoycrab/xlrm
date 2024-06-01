@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from '../../user';
+import { User, UserPermissions } from '../../user';
 import { UserService } from '../../user.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -58,7 +58,7 @@ acaoUsuario(usuario: User) {
 
     // Definir o valor de permission com base na opção escolhida
     if (result.isConfirmed) {
-      permissions = 2; // Aprovar
+      permissions = UserPermissions.ACCEPTED; // Aprovar
       Swal.fire({
         title: "Aprovado!",
         text: "O usuário já pode entrar",
@@ -67,7 +67,7 @@ acaoUsuario(usuario: User) {
         location.reload(); // Recarregar a página após exibir a mensagem de sucesso
       });
     } else {
-      permissions = 1; // Reprovar
+      permissions = UserPermissions.REJECTED; // Reprovar
       Swal.fire({
         title: "Rejeitado!",
         text: "O usuário não foi aprovado.",

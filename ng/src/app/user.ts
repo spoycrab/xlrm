@@ -8,3 +8,13 @@ export class User {
 
     constructor() { }
 }
+
+export enum UserPermissions {
+    REGISTERED = 1 << 0,
+    REJECTED   = 1 << 1,
+    ACCEPTED   = 1 << 2,
+    CUST       = 1 << 3,
+    PRODUCT    = 1 << 4,
+    SALE       = 1 << 5,
+    ADMIN      = 1 << 6,
+}

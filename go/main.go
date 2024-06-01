@@ -10,24 +10,26 @@ import (
 	"github.com/google/uuid"
 )
 
-type Session struct {
-	Permissions int
+type session struct {
+	permissions int
 }
 
 const (
-	PerRegistered = 0
-	PerRejected   = 1
-	PerAccepted   = 2
-	PerCust       = 4
-	PerProduct    = 8
-	PerSale       = 16
-	PerAll        = 32
+	perRegistered = 1 << iota
+	perRejected
+	perAccepted
+	perCust
+	perProduct
+	perSale
+	perAdmin
 )
 
 var cookies = true
 
 var db *sql.DB
-var sessions = make(map[string]Session)
+var sessions = make(map[string]session)
+var dir = "../ng/dist/ng/browser"
+var fileHandler http.Handler
 
 func main() {
 	for i := 1; i < len(os.Args); i++ {
@@ -37,6 +39,8 @@ func main() {
 		default:
 		}
 	}
+
+	log.SetFlags(0)
 
 	config := mysql.Config{
 		User:   os.Getenv("DBUSER"),
@@ -95,33 +99,37 @@ func main() {
 	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))
 	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", cors(selectAllAllowedWithoutPermission))
 	http.HandleFunc("GET /api/user/selectUnregisteredUsers", cors(selectUnregisteredUsers))
-	/* http.HandleFunc("POST /api/user/login", cors(auth(login, PerCust | PerProduct | PerSale | PerAll))) */
-	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, PerCust | PerProduct | PerSale | PerAll))) */
+	/* http.HandleFunc("POST /api/user/login", cors(auth(login, perCust | perProduct | perSale | perAll))) */
+	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, perCust | perProduct | perSale | perAll))) */
 	http.HandleFunc("POST /api/user/login", cors(login))
 	http.HandleFunc("POST /api/user/logout", cors(logout))
 	http.HandleFunc("POST /api/user/register", cors(registerUser))
-	http.HandleFunc("POST /api/user/setUserPermission", cors(setUserPermission))
+	http.HandleFunc("POST /api/user/setUserPermission", auth(cors(setUserPermission), perAdmin))
 
+	fileHandler = http.FileServer(http.Dir(dir))
+	http.HandleFunc("GET /", staticHandler(false, false, -1))
+	http.HandleFunc("GET /cadastrarCliente", staticHandler(true, true, -1))
+	http.HandleFunc("GET /cadastrarProduto", staticHandler(true, true, -1))
+	http.HandleFunc("GET /concederAcesso", staticHandler(true, true, -1))
+	http.HandleFunc("GET /estadoUsuario", staticHandler(true, true, -1))
+	http.HandleFunc("GET /login", staticHandler(true, false, -1))
+	http.HandleFunc("GET /register", staticHandler(true, false, -1))
+	http.HandleFunc("GET /telaInicio", staticHandler(true, true, -1))
+	http.HandleFunc("GET /visualizarProduto", staticHandler(true, true, -1))
 	log.Println("Listening...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func auth(f http.HandlerFunc, permissions int) http.HandlerFunc {
+func auth(f http.HandlerFunc, per int) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("session")
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		err = uuid.Validate(cookie.Value)
+		cookie, err := getSession(r)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		session := sessions[cookie.Value]
-		if (session.Permissions & permissions) > 0 {
+		if (session.permissions & per) > 0 {
 			f.ServeHTTP(w, r)
 		} else {
 			w.WriteHeader(http.StatusForbidden)
@@ -145,4 +153,54 @@ func setCorsHeaders(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST")
+}
+
+func staticHandler(isdir bool, private bool, per int) http.HandlerFunc {
+	return func (w http.ResponseWriter, r *http.Request) {
+		if isdir {
+			r.URL.Path = r.URL.Path + "/"
+		}
+		if !private {
+			log.Printf("Serving %s\n", r.URL.Path)
+			fileHandler.ServeHTTP(w, r)
+			return
+		}
+		cookie, err := getSession(r)
+		if err != nil {
+			log.Println(err)
+			log.Println("Redirecting to /login")
+			redirect(w, r, "login")
+			return
+		}
+		_, exists := sessions[cookie.Value]
+		log.Println(exists)
+		if !exists {
+			log.Printf("'%s' is not a valid session!\n", cookie.Value)
+			log.Println("Redirecting to /login")
+			redirect(w, r, "login")
+			return
+		}
+		log.Printf("Serving %s\n", r.URL.Path)
+		fileHandler.ServeHTTP(w, r)
+	}
+}
+
+func getSession(r *http.Request) (*http.Cookie, error) {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return nil, err
+	}
+	err = uuid.Validate(cookie.Value)
+	if err != nil {
+		return nil, err
+	}
+	return cookie, nil
+}
+
+func redirect(w http.ResponseWriter, r *http.Request, newPath string) {
+	if q := r.URL.RawQuery; q != "" {
+		newPath += "?" + q
+	}
+	w.Header().Set("Location", newPath)
+	w.WriteHeader(http.StatusFound)
 }
