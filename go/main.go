@@ -104,7 +104,7 @@ func main() {
 	http.HandleFunc("POST /api/user/login", cors(login))
 	http.HandleFunc("POST /api/user/logout", cors(logout))
 	http.HandleFunc("POST /api/user/register", cors(registerUser))
-	http.HandleFunc("POST /api/user/setUserPermission", cors(setUserPermission))
+	http.HandleFunc("POST /api/user/setUserPermission", auth(cors(setUserPermission), perAdmin))
 
 	fileHandler = http.FileServer(http.Dir(dir))
 	http.HandleFunc("GET /", staticHandler(false, false, -1))
@@ -157,7 +157,6 @@ func setCorsHeaders(w http.ResponseWriter, r *http.Request) {
 
 func staticHandler(isdir bool, private bool, per int) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
-		log.SetPrefix("staticHandler: ")
 		if isdir {
 			r.URL.Path = r.URL.Path + "/"
 		}
@@ -183,7 +182,6 @@ func staticHandler(isdir bool, private bool, per int) http.HandlerFunc {
 		}
 		log.Printf("Serving %s\n", r.URL.Path)
 		fileHandler.ServeHTTP(w, r)
-		log.SetPrefix("")
 	}
 }
 
