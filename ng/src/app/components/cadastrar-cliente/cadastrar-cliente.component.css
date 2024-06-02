@@ -8,7 +8,6 @@ input {
 
 /* See: https://angular.io/guide/form-validation#control-status-css-classes */
 
-
 body{
     background: #01B0EF;
     border: 1px solid #01B0EF;
@@ -16,14 +15,17 @@ body{
 }
     
 section{
-    width: 560px;
-    height: 800px;
+    width: 630px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 100px;
     margin-bottom: 100px;
     margin-left: auto;
     margin-right: auto;
     background-color: #D9D9D9;
     border-radius: 30px;
+    /* border: 1px solid black; */
 }
 
 h3{
@@ -205,13 +207,13 @@ h3{
     
 } */
 
-section {
+/* section {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #f5f5f5;
-  }
+  } */
   
   div {
     width: 100%;
@@ -222,8 +224,8 @@ section {
   
   .back-button {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 15%;
+    left: 30%;
   }
   
   h3 {
@@ -238,6 +240,7 @@ section {
   mat-form-field {
     width: 100%;
     margin-bottom: 20px;
+    /* border: 1px solid black; */
   }
   
   .button-container {
