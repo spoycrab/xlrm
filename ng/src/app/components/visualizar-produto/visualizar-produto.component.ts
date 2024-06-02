@@ -13,6 +13,7 @@ import { Product } from '../../product';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-visualizar-produto',
@@ -37,9 +38,10 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 export class VisualizarProdutoComponent implements OnInit{
 
   productForm: FormGroup;
+  editForm: FormGroup;
   products: Product[] = [];
   hasSearched = false;
-  displayedColumns: string[] = ['code', 'name', 'description', 'quantity', 'price', 'created'];
+  displayedColumns: string[] = ['code', 'name', 'description', 'quantity', 'price', 'created', 'edit'];
   dataSource: MatTableDataSource<Product>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -51,10 +53,16 @@ export class VisualizarProdutoComponent implements OnInit{
       name: [''],
       code: [''],
     });
-  }
+  
 
+  this.editForm = this.fb.group({
+    name: ['', Validators.required],
+    description: ['', Validators.required],
+    quantity: [0, [Validators.required, Validators.min(1)]],
+    price: [0, [Validators.required, Validators.min(0.01)]]
+  });
 
-
+}
 
   // constructor(private router: Router){}
 
@@ -128,5 +136,81 @@ export class VisualizarProdutoComponent implements OnInit{
       console.log('Passou no else')
       this.loadAllProducts();
     }
+  }
+
+  editProduct(product: Product): void {
+    Swal.fire({
+      title: 'Editar Produto',
+      html: `
+        <input id="swal-input-quantity" class="swal2-input" type="number" value="${product.quantity}" placeholder="Quantidade">
+        <input id="swal-input-name" class="swal2-input" value="${product.name}" placeholder="Nome">
+        <input id="swal-input-description" class="swal2-input" value="${product.description}" placeholder="Descrição">
+        <input id="swal-input-price" class="swal2-input" type="number" value="${product.price}" placeholder="Preço">
+        <button id="swal-delete-button" class="swal2-confirm swal2-styled" style="background-color: #d33; margin-top: 1rem;">Deletar</button>
+      `,
+      focusConfirm: false,
+      preConfirm: () => {
+        const quantity = (document.getElementById('swal-input-quantity') as HTMLInputElement).value;
+        const name = (document.getElementById('swal-input-name') as HTMLInputElement).value;
+        const description = (document.getElementById('swal-input-description') as HTMLInputElement).value;
+        const price = (document.getElementById('swal-input-price') as HTMLInputElement).value;
+
+        if (!name || !description || !quantity || !price) {
+          Swal.showValidationMessage('Todos os campos são obrigatórios.');
+          return false;
+        }
+
+        return { name, description, quantity: Number(quantity), price: Number(price) };
+      },
+      didOpen: () => {
+        const deleteButton = document.getElementById('swal-delete-button');
+        deleteButton?.addEventListener('click', () => {
+          Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Você não poderá reverter isso!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, deletar!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.deleteProduct(product);
+              Swal.close();
+            }
+          });
+        });
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const editedProduct = result.value;
+        product.name = editedProduct.name;
+        product.description = editedProduct.description;
+        product.quantity = editedProduct.quantity;
+        product.price = editedProduct.price;
+
+        this.productService.updateProduct(product).subscribe(
+          (response) => {
+            Swal.fire('Sucesso', 'Produto atualizado com sucesso', 'success');
+            this.loadAllProducts();
+          },
+          (error) => {
+            Swal.fire('Erro', 'Erro ao atualizar produto', 'error');
+          }
+        );
+      }
+    });
+  }
+
+  deleteProduct(product: Product): void {
+    this.productService.deleteProduct(product).subscribe(
+      (response) => {
+        Swal.fire('Deletado!', 'Seu produto foi deletado.', 'success');
+        this.loadAllProducts();
+      },
+      (error) => {
+        Swal.fire('Erro', 'Erro ao deletar produto', 'error');
+      }
+    );
   }
 }

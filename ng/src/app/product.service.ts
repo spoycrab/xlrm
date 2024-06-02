@@ -32,51 +32,11 @@ export class ProductService {
 	return throwError(() => new Error(msg));
     }
 
-    // register(user: User): Observable<HttpResponse<User>> {
-	// return this.http.post<User>(URL + "/register", user, OPTIONS).pipe(
-	//     catchError(this.errorHandler)
-	// );
-    // }
-
-	// login(user: User): Observable<any> {
-	// 	return this.http.post<User>(URL + "/login", user, { observe: 'response' }).pipe(
-	// 		catchError(this.errorHandler)
-	// 	);
-	// }
-
-    // getUsuariosSemPermissao(): Observable<User[]> {
-    //     return this.http.get<User[]>(URL + "/selectUnregisteredUsers").pipe(
-    //         catchError(this.errorHandler)
-    //     );
-    // }
-	// getAllUsersAllowed(): Observable<User[]> {
-    //     return this.http.get<User[]>(URL + "/selectAllAllowed").pipe(
-    //         catchError(this.errorHandler)
-	// 	);
-	// 	};
-
-        // getAllUsersAllowedWihoutPermissions(): Observable<User[]> {
-        //     return this.http.get<User[]>(URL + "/selectAllAllowedWithoutPermission").pipe(
-        //         catchError(this.errorHandler)
-        //     );
-        //     };
-
-    // setUserPermission(data: { id: number, permissions: number }) {
-    //     return this.http.post(URL + "/setUserPermission", data).pipe(
-    //         catchError(this.errorHandler)
-    //     );
-    // }
-
     registerProduct(product: Product): Observable<HttpResponse<Product>>{
         return this.http.post<Product>(URL + "/register", product, OPTIONS).pipe(
                 catchError(this.errorHandler)
             );
     }
-
-
-    //getAllProducts(): Observable<Product[]> {
-      //return this.http.get<Product[]>(`${URL}/getAllProducts`);
-    //}
 
     getProductByName(name: string): Observable<Product[]> {
         return this.http.get<Product[]>(`${URL}/getProductsByName?name=${name}`).pipe(
@@ -132,4 +92,16 @@ export class ProductService {
           tap(data => console.log('Queried products:', data))
         );
       }
+      updateProduct(product: Product) {
+        return this.http.post(`${URL}/updateProduct`, product, { responseType: 'text' }).pipe(
+          tap(data => console.log('Product updated:', data))
+        );
+      }
+
+      deleteProduct(product: Product){
+        return this.http.post(`${URL}/deleteProduct`, product, { responseType: 'text' }).pipe(
+          tap(data => console.log('Product updated:', data)))
+      }
+  
+
     }
