@@ -6,7 +6,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 
-import { User } from '../../user';
+import { User, UserPermissions } from '../../user';
 import { UserService } from '../../user.service';
 
 @Component({
@@ -17,7 +17,7 @@ import { UserService } from '../../user.service';
     styleUrl: './reavaliar-acesso.component.css'
   })
   export class RevogarAcessoComponent {
-  
+
     users: User[] = [];
     approvedUsers: User[] = [];
     rejectedUsers: User[] = [];
@@ -30,7 +30,7 @@ import { UserService } from '../../user.service';
         this.loadApprovedUsers();
         this.loadRejectedUsers();
       }
-    
+
       loadApprovedUsers(): void {
         this.userService.getAllUsersAllowed().subscribe(
           (response) => {
@@ -45,7 +45,7 @@ import { UserService } from '../../user.service';
           }
         );
       }
-    
+
       loadRejectedUsers(): void {
         this.userService.getAllRejected().subscribe(
           (response) => {
@@ -63,7 +63,7 @@ import { UserService } from '../../user.service';
 
       modificarParaReprovado(usuario: User) {
         const id = usuario.id;
-      
+
         Swal.fire({
           title: 'Você quer modificar o status do usuário para reprovado?',
           icon: 'question',
@@ -72,9 +72,9 @@ import { UserService } from '../../user.service';
           cancelButtonText: 'Não'
         }).then((result) => {
           if (result.isConfirmed) {
-            const permissions = 1; // Reprovar
+            const permissions = UserPermissions.REJECTED;
             const data = { id, permissions };
-      
+
             this.userService.setUserPermission(data).subscribe(
               () => {
                 Swal.fire({
@@ -96,7 +96,7 @@ import { UserService } from '../../user.service';
 
       modificarParaAprovado(usuario: User) {
         const id = usuario.id;
-      
+
         Swal.fire({
           title: 'Você quer modificar o status do usuário para aprovado?',
           icon: 'question',
@@ -105,9 +105,9 @@ import { UserService } from '../../user.service';
           cancelButtonText: 'Não'
         }).then((result) => {
           if (result.isConfirmed) {
-            const permissions = 2; // Aprovar
+            const permissions = UserPermissions.ACCEPTED;
             const data = { id, permissions };
-      
+
             this.userService.setUserPermission(data).subscribe(
               () => {
                 Swal.fire({
@@ -126,8 +126,8 @@ import { UserService } from '../../user.service';
           }
         });
       }
-      
-    
+
+
 
 
 //     modifyAcessoAllowed(user: User): void {
@@ -200,7 +200,7 @@ import { UserService } from '../../user.service';
 //         });
 //     }
 
-    
+
     goToTelaInicio(): void {
 	this.router.navigate(['/telaInicio']);
     }
