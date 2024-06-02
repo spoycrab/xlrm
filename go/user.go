@@ -412,3 +412,39 @@ func selectAllAllowedWithoutPermission(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, string(jsonData))
 }
+
+func getAllRejected(w http.ResponseWriter, r *http.Request) {
+	row, err := db.Query("SELECT * FROM user WHERE permissions = ?;", perRejected)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer row.Close()
+
+	var users []User
+
+	for row.Next() {
+		var user User
+
+		err = row.Scan(&user.Id, &user.Pass, &user.Permissions, &user.Name,
+			&user.Email, &user.BirthDate, &user.Created,
+			&user.Updated)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		user.Pass = ""
+		users = append(users, user)
+	}
+
+	jsonData, err := json.Marshal(users)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, string(jsonData))
+}

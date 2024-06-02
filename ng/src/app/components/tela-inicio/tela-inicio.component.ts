@@ -45,6 +45,10 @@ export class TelaInicioComponent {
     this.router.navigate(['/visualizarProduto']);
   }
 
+  onNavigate6(){
+    this.router.navigate(['/reavaliarUsuario']);
+  }
+
   logout(event: Event): void {
     event.preventDefault();  // Prevenir comportamento padrão do formulário
 

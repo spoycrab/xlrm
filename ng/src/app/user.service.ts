@@ -78,4 +78,10 @@ export class UserService {
                     catchError(this.errorHandler)
                 );
             }
+
+    getAllRejected(): Observable<User[]> {
+        return this.http.get<User[]>(URL + "/getAllRejected").pipe(
+            catchError(this.errorHandler)
+        );
+        };
         }

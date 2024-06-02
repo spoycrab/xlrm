@@ -80,6 +80,7 @@ func main() {
 	http.HandleFunc("OPTIONS /api/user/register", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/selectAllAllowed", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/selectAllAllowedWithoutPermission", cors(nil))
+	http.HandleFunc("OPTIONS /api/user/getAllRejected", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/setUserPermission", cors(nil))
 
@@ -98,6 +99,7 @@ func main() {
 	http.HandleFunc("GET /api/user/{id}", cors(getUserById))
 	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))
 	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", cors(selectAllAllowedWithoutPermission))
+	http.HandleFunc("GET /api/user/getAllRejected", cors(getAllRejected))
 	http.HandleFunc("GET /api/user/selectUnregisteredUsers", cors(selectUnregisteredUsers))
 	/* http.HandleFunc("POST /api/user/login", cors(auth(login, perCust | perProduct | perSale | perAll))) */
 	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, perCust | perProduct | perSale | perAll))) */
@@ -113,6 +115,7 @@ func main() {
 	http.HandleFunc("GET /concederAcesso", staticHandler(true, true, -1))
 	http.HandleFunc("GET /estadoUsuario", staticHandler(true, true, -1))
 	http.HandleFunc("GET /login", staticHandler(true, false, -1))
+	http.HandleFunc("GET /reavaliarUsuario", staticHandler(true, true, -1))
 	http.HandleFunc("GET /register", staticHandler(true, false, -1))
 	http.HandleFunc("GET /telaInicio", staticHandler(true, true, -1))
 	http.HandleFunc("GET /visualizarProduto", staticHandler(true, true, -1))
