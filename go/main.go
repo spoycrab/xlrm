@@ -67,12 +67,17 @@ func main() {
 	http.HandleFunc("OPTIONS /api/customer/getCustumerByDocument", cors(nil))
 	http.HandleFunc("OPTIONS /api/customer/getCustomersByName", cors(nil))
 	http.HandleFunc("OPTIONS /api/customer/register", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/deleteCustomer", cors(nil))
+	http.HandleFunc("OPTIONS /api/customer/updateCustomer", cors(nil))
 
 	http.HandleFunc("OPTIONS /api/product/{id}", cors(nil))
 	http.HandleFunc("OPTIONS /api/product/register", cors(nil))
 	http.HandleFunc("OPTIONS /api/product/getAllProducts", cors(nil))
 	http.HandleFunc("OPTIONS /api/product/getProductsByDate", cors(nil))
 	http.HandleFunc("OPTIONS /api/product/getProductsByQuery", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/updateProduct", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/updateProductQuantity", cors(nil))
+	http.HandleFunc("OPTIONS /api/product/deleteProduct", cors(nil))
 
 	http.HandleFunc("OPTIONS /api/user/{id}", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/login", cors(nil))
@@ -89,12 +94,17 @@ func main() {
 	http.HandleFunc("GET /api/customer/getCustumerByDocument", cors(getCustumerByDocument))
 	http.HandleFunc("GET /api/customer/getCustomersByName", cors(getCustomersByName))
 	http.HandleFunc("POST /api/customer/register", cors(registerCustomer))
+	http.HandleFunc("POST /api/customer/deleteCustomer", cors(deleteCustomer))
+	http.HandleFunc("POST /api/customer/updateCustomer", cors(updateCustomer))
 
 	http.HandleFunc("GET /api/product/{id}", cors(getProductById))
 	http.HandleFunc("GET /api/product/getAllProducts", cors(getAllProducts))
 	http.HandleFunc("GET /api/product/getProductsByDate", cors(getProductsByDate)) //Exemplo de requisiçao por url: http://localhost:8080/api/product/getProductsByDate?startDate=2024-05-01&endDate=2024-08-31
 	http.HandleFunc("GET /api/product/getProductsByQuery", cors(getProductsByQuery))
 	http.HandleFunc("POST /api/product/register", cors(registerProduct))
+	http.HandleFunc("POST /api/product/updateProduct", cors(updateProduct))
+	http.HandleFunc("POST /api/product/updateProductQuantity", cors(updateProductQuantity))
+	http.HandleFunc("POST /api/product/deleteProduct", cors(deleteProduct))
 
 	http.HandleFunc("GET /api/user/{id}", cors(getUserById))
 	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))

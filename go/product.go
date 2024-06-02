@@ -241,7 +241,7 @@ func getProductsByQuery(w http.ResponseWriter, r *http.Request) {
 	query := `
 			SELECT id, code, name, manufacturer, description, quantity, price, hidden, created, updated
 			FROM Product
-			WHERE 1=1
+			WHERE hidden = 0
 		`
 	args := []interface{}{}
 
@@ -304,7 +304,7 @@ func getProductsByQuery(w http.ResponseWriter, r *http.Request) {
 func getAllProducts(w http.ResponseWriter, r *http.Request) {
 	query := `
 			SELECT id, code, name, manufacturer, description, quantity, price, hidden, created, updated
-			FROM Product
+			FROM Product WHERE hidden = 0
 		`
 
 	// Realizar a consulta no banco de dados
@@ -344,4 +344,148 @@ func getAllProducts(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error encoding response as JSON:", err)
 		return
 	}
+}
+
+func updateProduct(w http.ResponseWriter, r *http.Request) {
+
+	type ProductTemp struct {
+		Id           int64    `json:"id"`
+		Code         int32    `json:"code"`
+		Name         *string  `json:"name"`
+		Manufacturer *string  `json:"manufacturer"`
+		Description  *string  `json:"description"`
+		Quantity     *int32   `json:"quantity"`
+		Price        *float64 `json:"price"`
+		Hidden       *uint8   `json:"hidden"`
+	}
+
+	var product ProductTemp
+
+	err := json.NewDecoder(r.Body).Decode(&product)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	res, err := selectProductByCode(int64(product.Code))
+	if err != nil {
+		http.Error(w, "Product not found", http.StatusBadRequest)
+		return
+	}
+	query := "UPDATE Product SET "
+	params := []interface{}{}
+	if product.Name != nil {
+		query += "name = ?, "
+		params = append(params, *product.Name)
+	}
+	if product.Manufacturer != nil {
+		query += "manufacturer = ?, "
+		params = append(params, *product.Manufacturer)
+	}
+	if product.Description != nil {
+		query += "description = ?, "
+		params = append(params, *product.Description)
+	}
+	if product.Quantity != nil {
+		query += "quantity = ?, "
+		params = append(params, *product.Quantity)
+	}
+	if product.Price != nil {
+		query += "price = ?, "
+		params = append(params, *product.Price)
+	}
+	if product.Hidden != nil {
+		query += "hidden = ?, "
+		params = append(params, *product.Hidden)
+	}
+	query += "updated = NOW() WHERE id = ?"
+	params = append(params, res.Id)
+
+	_, err = db.Exec(query, params...)
+	if err != nil {
+		http.Error(w, "Failed to update product", http.StatusInternalServerError)
+		log.Println("Error updating product:", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "Product updated successfully")
+
+}
+
+func updateProductQuantity(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Code     int64 `json:"code"`
+		Quantity int   `json:"quantity"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		log.Println("Error decoding JSON:", err)
+		return
+	}
+
+	var currentQuantity int
+	query := "SELECT quantity FROM Product WHERE code = ?"
+	if err := db.QueryRow(query, req.Code).Scan(&currentQuantity); err != nil {
+		http.Error(w, "Product not found", http.StatusNotFound)
+		log.Println("Error fetching product quantity:", err)
+		return
+	}
+
+	newQuantity := currentQuantity + req.Quantity
+	if newQuantity < 0 {
+		http.Error(w, "Total Quantity cannot be negative", http.StatusBadRequest)
+		return
+	}
+
+	updateQuery := "UPDATE Product SET quantity = ?, updated = NOW() WHERE code = ?"
+	_, err := db.Exec(updateQuery, newQuantity, req.Code)
+	if err != nil {
+		http.Error(w, "Failed to update product quantity", http.StatusInternalServerError)
+		log.Println("Error updating product quantity:", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Product quantity updated successfully")
+
+}
+
+func deleteProduct(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Code int64 `json:"code"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		log.Println("Error decoding JSON:", err)
+		return
+	}
+
+	product, err := selectProductByCode(int64(req.Code))
+	if err != nil {
+		http.Error(w, "Product not found", http.StatusBadRequest)
+		return
+	}
+
+	if product.Hidden != 0 {
+		http.Error(w, "Product Already Deleted", http.StatusBadRequest)
+		return
+	}
+
+	query := ` UPDATE Product 
+			SET hidden = 1, updated = NOW()
+			WHERE code = ?
+	`
+	_, err = db.Exec(query, req.Code)
+	if err != nil {
+		http.Error(w, "Failed to update product", http.StatusInternalServerError)
+		log.Println("Error updating product:", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Product updated successfully")
 }

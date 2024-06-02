@@ -293,7 +293,7 @@ func getCustomersByName(w http.ResponseWriter, r *http.Request) {
 func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 	query := `
 			SELECT id, firstName, fullName, document, email, phoneNumber, type, streetAddress, city, state, zipCode, country, hidden, created, updated
-			FROM customer
+			FROM customer WHERE hidden = 0
 		`
 
 	// Realizar a consulta no banco de dados
@@ -334,4 +334,130 @@ func getAllCustomers(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error encoding response as JSON:", err)
 		return
 	}
+}
+
+func updateCustomer(w http.ResponseWriter, r *http.Request) {
+	//struct temporaria para nao precisar preencher todos os campos no json
+	type CustomerTemp struct {
+		Id            int64   `json:"id"`
+		FirstName     *string `json:"firstName"`
+		FullName      *string `json:"fullName"`
+		Document      string  `json:"document"`
+		Email         *string `json:"email"`
+		PhoneNumber   *string `json:"phoneNumber"`
+		Type          *uint8  `json:"type"`
+		StreetAddress *string `json:"streetAddress"`
+		City          *string `json:"city"`
+		State         *string `json:"state"`
+		ZIPCode       *string `json:"zipCode"`
+		Country       *string `json:"country"`
+		Hidden        *uint8  `json:"hidden"`
+	}
+	var customer CustomerTemp
+
+	err := json.NewDecoder(r.Body).Decode(&customer)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	res, err := selectCustomerByDocument(customer.Document)
+	if err != nil {
+		http.Error(w, "Customer not found", http.StatusBadRequest)
+		return
+	}
+	query := "UPDATE Customer SET "
+	params := []interface{}{}
+	if customer.FirstName != nil {
+		query += "firstName = ?, "
+		params = append(params, *customer.FirstName)
+	}
+	if customer.FullName != nil {
+		query += "fullName = ?, "
+		params = append(params, *customer.FullName)
+	}
+	if customer.Email != nil {
+		query += "email = ?, "
+		params = append(params, *customer.Email)
+	}
+	if customer.PhoneNumber != nil {
+		query += "phoneNumber = ?, "
+		params = append(params, *customer.PhoneNumber)
+	}
+	if customer.Type != nil {
+		query += "type = ?, "
+		params = append(params, *customer.Type)
+	}
+	if customer.StreetAddress != nil {
+		query += "streetAddress = ?, "
+		params = append(params, *customer.StreetAddress)
+	}
+	if customer.City != nil {
+		query += "city = ?, "
+		params = append(params, *customer.City)
+	}
+	if customer.State != nil {
+		query += "state = ?, "
+		params = append(params, *customer.State)
+	}
+	if customer.ZIPCode != nil {
+		query += "zipCode = ?, "
+		params = append(params, *customer.ZIPCode)
+	}
+	if customer.Country != nil {
+		query += "country = ?, "
+		params = append(params, *customer.Country)
+	}
+	if customer.Hidden != nil {
+		query += "hidden = ?, "
+		params = append(params, *customer.Hidden)
+	}
+	query += "updated = NOW() WHERE id = ?"
+	params = append(params, res.Id)
+
+	// Executar a consulta SQL
+	_, err = db.Exec(query, params...)
+	if err != nil {
+		http.Error(w, "Failed to update customer", http.StatusInternalServerError)
+		log.Println("Error updating customer:", err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Customer updated successfully")
+}
+
+func deleteCustomer(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Document string `json:"document"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		log.Println("Error decoding JSON:", err)
+		return
+	}
+
+	customer, err := selectCustomerByDocument(req.Document)
+	if err != nil {
+		http.Error(w, "Customer not found", http.StatusBadRequest)
+		return
+	}
+
+	if customer.Hidden != 0 {
+		http.Error(w, "Customer Already Deleted", http.StatusBadRequest)
+		return
+	}
+
+	query := ` UPDATE customer 
+			SET hidden = 1, updated = NOW()
+			WHERE id = ?
+	`
+	_, err = db.Exec(query, customer.Id)
+	if err != nil {
+		http.Error(w, "Failed to update customer", http.StatusInternalServerError)
+		log.Println("Error updating customer:", err)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Customer updated successfully")
 }
