@@ -423,9 +423,8 @@ func selectAllAllowedWithoutPermission(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(jsonData))
 }
 
-// Codigo by Dylan
-func selectRejected(w http.ResponseWriter, r *http.Request) {
-	row, err := db.Query("SELECT * FROM user WHERE permissions = 1;")
+func getAllRejected(w http.ResponseWriter, r *http.Request) {
+	row, err := db.Query("SELECT * FROM user WHERE permissions = ?;", PerRejected)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
