@@ -234,7 +234,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u := uuid.NewString()
-	sessions[u] = session{result.Permissions}
+	sessions[u] = session{result.Permissions, result.Email}
 	cookie := http.Cookie{
 		Name:   "session",
 		Value:  u,

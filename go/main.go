@@ -2,9 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
@@ -12,6 +15,7 @@ import (
 
 type session struct {
 	permissions int
+	email string
 }
 
 const (
@@ -24,23 +28,27 @@ const (
 	perAdmin
 )
 
-var cookies = true
-
 var db *sql.DB
 var sessions = make(map[string]session)
 var dir = "../ng/dist/ng/browser"
 var fileHandler http.Handler
 
+var lfile string
+var lflags int
+
 func main() {
-	for i := 1; i < len(os.Args); i++ {
-		switch os.Args[i] {
-		case "--no-cookies":
-			cookies = false
-		default:
+	flag.StringVar(&lfile, "log", "", "")
+	flag.IntVar(&lflags, "lflags", log.LstdFlags, "")
+	flag.Parse()
+	if lfile != "" {
+		f, err := os.OpenFile(lfile, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644)
+		if err != nil {
+			log.Println(err)
+		} else {
+			log.SetOutput(f)
 		}
 	}
-
-	log.SetFlags(0)
+	log.SetFlags(lflags)
 
 	config := mysql.Config{
 		User:   os.Getenv("DBUSER"),
@@ -89,34 +97,32 @@ func main() {
 	http.HandleFunc("OPTIONS /api/user/selectUnregisteredUsers", cors(nil))
 	http.HandleFunc("OPTIONS /api/user/setUserPermission", cors(nil))
 
-	http.HandleFunc("GET /api/customer/{id}", cors(getCustomerById))
-	http.HandleFunc("GET /api/customer/getAllCustomers", cors(getAllCustomers))
-	http.HandleFunc("GET /api/customer/getCustumerByDocument", cors(getCustumerByDocument))
-	http.HandleFunc("GET /api/customer/getCustomersByName", cors(getCustomersByName))
-	http.HandleFunc("POST /api/customer/register", cors(registerCustomer))
-	http.HandleFunc("POST /api/customer/deleteCustomer", cors(deleteCustomer))
-	http.HandleFunc("POST /api/customer/updateCustomer", cors(updateCustomer))
+	http.HandleFunc("GET /api/customer/{id}", logger(cors(getCustomerById)))
+	http.HandleFunc("GET /api/customer/getAllCustomers", logger(cors(getAllCustomers)))
+	http.HandleFunc("GET /api/customer/getCustumerByDocument", logger(cors(getCustumerByDocument)))
+	http.HandleFunc("GET /api/customer/getCustomersByName", logger(cors(getCustomersByName)))
+	http.HandleFunc("POST /api/customer/register", logger(cors(registerCustomer)))
+	http.HandleFunc("POST /api/customer/deleteCustomer", logger(cors(deleteCustomer)))
+	http.HandleFunc("POST /api/customer/updateCustomer", logger(cors(updateCustomer)))
 
-	http.HandleFunc("GET /api/product/{id}", cors(getProductById))
-	http.HandleFunc("GET /api/product/getAllProducts", cors(getAllProducts))
-	http.HandleFunc("GET /api/product/getProductsByDate", cors(getProductsByDate)) //Exemplo de requisiçao por url: http://localhost:8080/api/product/getProductsByDate?startDate=2024-05-01&endDate=2024-08-31
-	http.HandleFunc("GET /api/product/getProductsByQuery", cors(getProductsByQuery))
-	http.HandleFunc("POST /api/product/register", cors(registerProduct))
-	http.HandleFunc("POST /api/product/updateProduct", cors(updateProduct))
-	http.HandleFunc("POST /api/product/updateProductQuantity", cors(updateProductQuantity))
-	http.HandleFunc("POST /api/product/deleteProduct", cors(deleteProduct))
+	http.HandleFunc("GET /api/product/{id}", logger(cors(getProductById)))
+	http.HandleFunc("GET /api/product/getAllProducts", logger(cors(getAllProducts)))
+	http.HandleFunc("GET /api/product/getProductsByDate", logger(cors(getProductsByDate)))
+	http.HandleFunc("GET /api/product/getProductsByQuery", logger(cors(getProductsByQuery)))
+	http.HandleFunc("POST /api/product/register", logger(cors(registerProduct)))
+	http.HandleFunc("POST /api/product/updateProduct", logger(cors(updateProduct)))
+	http.HandleFunc("POST /api/product/updateProductQuantity", logger(cors(updateProductQuantity)))
+	http.HandleFunc("POST /api/product/deleteProduct", logger(cors(deleteProduct)))
 
-	http.HandleFunc("GET /api/user/{id}", cors(getUserById))
-	http.HandleFunc("GET /api/user/selectAllAllowed", cors(selectAllAllowed))
-	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", cors(selectAllAllowedWithoutPermission))
-	http.HandleFunc("GET /api/user/getAllRejected", cors(getAllRejected))
-	http.HandleFunc("GET /api/user/selectUnregisteredUsers", cors(selectUnregisteredUsers))
-	/* http.HandleFunc("POST /api/user/login", cors(auth(login, perCust | perProduct | perSale | perAll))) */
-	/* http.HandleFunc("POST /api/user/logout", cors(auth(logout, perCust | perProduct | perSale | perAll))) */
+	http.HandleFunc("GET /api/user/{id}", logger(cors(getUserById)))
+	http.HandleFunc("GET /api/user/selectAllAllowed", logger(cors(selectAllAllowed)))
+	http.HandleFunc("GET /api/user/selectAllAllowedWithoutPermission", logger(cors(selectAllAllowedWithoutPermission)))
+	http.HandleFunc("GET /api/user/getAllRejected", logger(cors(getAllRejected)))
+	http.HandleFunc("GET /api/user/selectUnregisteredUsers", logger(cors(selectUnregisteredUsers)))
 	http.HandleFunc("POST /api/user/login", cors(login))
-	http.HandleFunc("POST /api/user/logout", cors(logout))
+	http.HandleFunc("POST /api/user/logout", logger(cors(logout)))
 	http.HandleFunc("POST /api/user/register", cors(registerUser))
-	http.HandleFunc("POST /api/user/setUserPermission", auth(cors(setUserPermission), perAdmin))
+	http.HandleFunc("POST /api/user/setUserPermission", logger(auth(cors(setUserPermission), perAdmin)))
 
 	fileHandler = http.FileServer(http.Dir(dir))
 	http.HandleFunc("GET /", staticHandler(false, false, -1))
@@ -131,6 +137,22 @@ func main() {
 	http.HandleFunc("GET /visualizarProduto", staticHandler(true, true, -1))
 	log.Println("Listening...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func logger(f http.HandlerFunc) http.HandlerFunc {
+	return func (w http.ResponseWriter, r *http.Request) {
+		var b strings.Builder
+
+		cookie, err := getSession(r)
+		if err != nil {
+			log.Println(err)
+		} else {
+			fmt.Fprintf(&b, "%s ", sessions[cookie.Value].email)
+		}
+		fmt.Fprintf(&b, "%s %s %s", r.Method, r.URL.Path, r.Proto)
+		log.Println(b.String())
+		f.ServeHTTP(w, r)
+	}
 }
 
 func auth(f http.HandlerFunc, per int) http.HandlerFunc {
