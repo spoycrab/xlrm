@@ -9,6 +9,7 @@ import { CadastrarProdutoComponent } from './components/cadastrar-produto/cadast
 import { CadastrarClienteComponent } from './components/cadastrar-cliente/cadastrar-cliente.component';
 import { VisualizarProdutoComponent } from './components/visualizar-produto/visualizar-produto.component';
 import { RevogarAcessoComponent } from './components/revogar-acesso/reavaliar-acesso.component';
+import { PesquisarClienteComponent } from './components/pesquisar-cliente/pesquisar-cliente.component';
 
 export const ROUTES: Routes = [
     {path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -34,5 +35,8 @@ export const ROUTES: Routes = [
     },
     {
         path: "reavaliarUsuario", component: RevogarAcessoComponent
+    },
+    {
+        path: "pesquisarCliente", component: PesquisarClienteComponent
     }
 ];
