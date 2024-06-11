@@ -131,6 +131,7 @@ func main() {
 	http.HandleFunc("GET /concederAcesso", staticHandler(true, true, -1))
 	http.HandleFunc("GET /estadoUsuario", staticHandler(true, true, -1))
 	http.HandleFunc("GET /login", staticHandler(true, false, -1))
+	http.HandleFunc("GET /pesquisarCliente", staticHandler(true, false, -1))
 	http.HandleFunc("GET /reavaliarUsuario", staticHandler(true, true, -1))
 	http.HandleFunc("GET /register", staticHandler(true, false, -1))
 	http.HandleFunc("GET /telaInicio", staticHandler(true, true, -1))
