@@ -49,6 +49,10 @@ export class TelaInicioComponent {
     this.router.navigate(['/reavaliarUsuario']);
   }
 
+  onNavigate7(){
+    this.router.navigate(['/pesquisarCliente']);
+  }
+
   logout(event: Event): void {
     event.preventDefault();  // Prevenir comportamento padrão do formulário
 
