@@ -229,7 +229,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if result.Permissions == perRegistered || result.Permissions == perRejected ||
-	   result.Permissions == perAccepted {
+		result.Permissions == perAccepted {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
@@ -342,7 +342,7 @@ func setUserPermission(w http.ResponseWriter, r *http.Request) {
 }
 
 func selectAllAllowed(w http.ResponseWriter, r *http.Request) {
-	row, err := db.Query("SELECT * FROM user WHERE permissions != ? AND permissions != ?;", perRegistered, perRejected)
+	row, err := db.Query("SELECT * FROM user WHERE permissions != ? AND permissions != ? AND permissions != ?;", perRegistered, perRejected, perAdmin)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

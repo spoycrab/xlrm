@@ -40,7 +40,7 @@ export class PesquisarClienteComponent {
   editForm: FormGroup;
   customers: Customer[] = [];
   hasSearched = false;
-  displayedColumns: string[] = ['fullName', 'email', 'document', 'phoneNumber', 'streetAddress', 'created', 'edit'];
+  displayedColumns: string[] = ['firstName', 'fullName', 'email', 'document', 'phoneNumber', 'streetAddress', 'created', 'edit'];
   dataSource: MatTableDataSource<Customer>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -173,84 +173,86 @@ export class PesquisarClienteComponent {
 }
 
 
-  editCustomer(customer: Customer): void {
-    Swal.fire({
-      title: 'Editar Cliente',
-      html: `
-        <input id="swal-input-name" class="swal2-input"  value="${customer.fullName}" placeholder="Nome">
-        <input id="swal-input-email" class="swal2-input" value="${customer.email}" placeholder="Email">
-        <input id="swal-input-document" class="swal2-input" value="${customer.document}" placeholder="Documento">
-        <input id="swal-input-phoneNumber" class="swal2-input"  value="${customer.phoneNumber}" placeholder="Telefone">
-        <input id="swal-input-streetAddress" class="swal2-input"  value="${customer.streetAddress}" placeholder="Endereco">
-        <button id="swal-delete-button" class="swal2-confirm swal2-styled" style="background-color: #d33; margin-top: 1rem;">Deletar</button>
-      `,
-      focusConfirm: false,
-      preConfirm: () => {
-        const fullName = (document.getElementById('swal-input-name') as HTMLInputElement).value;
-        const email = (document.getElementById('swal-input-email') as HTMLInputElement).value;
-        const doc = (document.getElementById('swal-input-document') as HTMLInputElement).value;
-        const phoneNumber = (document.getElementById('swal-input-phoneNumber') as HTMLInputElement).value;
-        const streetAddress = (document.getElementById('swal-input-streetAddress') as HTMLInputElement).value;
+editCustomer(customer: Customer): void {
+  Swal.fire({
+    title: 'Editar Cliente',
+    html: `
+      <input id="swal-input-firstname" class="swal2-input" value="${customer.firstName}" placeholder="Nome">
+      <input id="swal-input-fullName" class="swal2-input" value="${customer.fullName}" placeholder="Sobrenome">
+      <input id="swal-input-email" class="swal2-input" value="${customer.email}" placeholder="Email">
+      <input id="swal-input-document" class="swal2-input" value="${customer.document}" placeholder="Documento">
+      <input id="swal-input-phoneNumber" class="swal2-input" value="${customer.phoneNumber}" placeholder="Telefone">
+      <input id="swal-input-streetAddress" class="swal2-input" value="${customer.streetAddress}" placeholder="Endereco">
+      <button id="swal-delete-button" class="swal2-confirm swal2-styled" style="background-color: #d33; margin-top: 1rem;">Deletar</button>
+    `,
+    focusConfirm: false,
+    preConfirm: () => {
+      const firstName = (document.getElementById('swal-input-firstname') as HTMLInputElement).value;
+      const fullName = (document.getElementById('swal-input-fullName') as HTMLInputElement).value;
+      const email = (document.getElementById('swal-input-email') as HTMLInputElement).value;
+      const doc = (document.getElementById('swal-input-document') as HTMLInputElement).value;
+      const phoneNumber = (document.getElementById('swal-input-phoneNumber') as HTMLInputElement).value;
+      const streetAddress = (document.getElementById('swal-input-streetAddress') as HTMLInputElement).value;
 
-        if (!fullName || !email || !doc || !phoneNumber || !streetAddress) {
-          Swal.showValidationMessage('Todos os campos são obrigatórios.');
-          return false;
-        }
-
-        return { fullName, email, doc, phoneNumber, streetAddress };
-      },
-      didOpen: () => {
-        const deleteButton = document.getElementById('swal-delete-button');
-        deleteButton?.addEventListener('click', () => {
-          Swal.fire({
-            title: 'Tem certeza?',
-            text: 'Você não poderá reverter isso!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sim, deletar!'
-          }).then((result) => {
-            if (result.isConfirmed) {
-              this.deleteCustomers(customer);
-              Swal.close();
-            }
-          });
-        });
+      if (!firstName || !fullName || !email || !doc || !phoneNumber || !streetAddress) {
+        Swal.showValidationMessage('Todos os campos são obrigatórios.');
+        return false;
       }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const editedCustomer = result.value;
-        customer.fullName = editedCustomer.fullName;
-        customer.email = editedCustomer.email;
-        customer.document = editedCustomer.doc;
-        customer.phoneNumber = editedCustomer.phoneNumber;
-        customer.streetAddress = editedCustomer.streetAddress;
-        console.log(customer);
-        this.customerService.updateCustomer(customer).subscribe(
-          (response) => {
-            Swal.fire('Sucesso', 'Cliente atualizado com sucesso', 'success');
-            this.loadAllCustomers();
-          },
-          (error) => {
-            console.log(error)
-            Swal.fire('Erro', 'Erro ao atualizar cliente', 'error');
+
+      return { firstName, fullName, email, doc, phoneNumber, streetAddress };
+    },
+    didOpen: () => {
+      const deleteButton = document.getElementById('swal-delete-button');
+      deleteButton?.addEventListener('click', () => {
+        Swal.fire({
+          title: 'Tem certeza?',
+          text: 'Você não poderá reverter isso!',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sim, deletar!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.deleteCustomers(customer);
+            Swal.close();
           }
-        );
-      }
-    });
-  }
+        });
+      });
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const editedCustomer = result.value;
+      customer.firstName = editedCustomer.firstName;
+      customer.fullName = editedCustomer.fullName;
+      customer.email = editedCustomer.email;
+      customer.document = editedCustomer.doc;
+      customer.phoneNumber = editedCustomer.phoneNumber;
+      customer.streetAddress = editedCustomer.streetAddress;
+      this.customerService.updateCustomer(customer).subscribe(
+        () => {
+          Swal.fire('Sucesso', 'Cliente atualizado com sucesso', 'success');
+          this.loadAllCustomers();
+        },
+        () => {
+          Swal.fire('Erro', 'Erro ao atualizar cliente', 'error');
+        }
+      );
+    }
+  });
 
-  deleteCustomers(customer: Customer): void {
-    this.customerService.deleteCustomer(customer).subscribe(
-      (response) => {
-        Swal.fire('Deletado!', 'O cliente foi deletado.', 'success');
-        this.loadAllCustomers();
-      },
-      (error) => {
-        Swal.fire('Erro', 'Erro ao deletar o cliente', 'error');
-      }
-    );
-  }
+}
+
+deleteCustomers(customer: Customer): void {
+  this.customerService.deleteCustomer(customer).subscribe(
+    (response) => {
+      Swal.fire('Deletado!', 'O cliente foi deletado.', 'success');
+      this.loadAllCustomers();
+    },
+    (error) => {
+      Swal.fire('Erro', 'Erro ao deletar o cliente', 'error');
+    }
+  );
+}
 
 }
